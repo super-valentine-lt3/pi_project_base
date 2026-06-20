@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="16" height="9" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="19">
+ <tileset firstgid="1" source="tiny_dungeon_tilesheet.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="16" height="9">
+  <data encoding="csv">
+5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+4,4,0,0,4,4,4,4,4,4,4,4,4,0,0,4,
+4,4,0,0,4,4,4,4,4,4,4,4,4,0,0,4,
+4,4,0,0,4,4,4,4,4,4,4,4,4,0,0,4,
+4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+</data>
+ </layer>
+ <objectgroup id="2" name="Object Layer 1">
+  <object id="11" template="templates/bomb.tx" x="112" y="64"/>
+  <object id="12" template="templates/bomb.tx" x="80" y="64"/>
+  <object id="14" template="templates/bomb.tx" x="144" y="64"/>
+  <object id="15" template="templates/bomb.tx" x="96" y="96"/>
+  <object id="16" template="templates/bomb.tx" x="128" y="96"/>
+  <object id="17" template="templates/gem.tx" x="112" y="80"/>
+ </objectgroup>
+</map>
