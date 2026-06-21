@@ -7,6 +7,8 @@ import (
     "github.com/lafriks/go-tiled"
     _ "embed"
     "fmt"
+        "github.com/elgopher/pi/pikey"
+
 )
 const mapPath = "assets/room_test_1.tmx" // Path to your Tiled Map.
 var gameMap *tiled.Map 
@@ -28,15 +30,20 @@ func NewObjectMap() ObjectMap {
 
    for _, layer := range gameMap.ObjectGroups {
        for _, object := range layer.Objects  {
-         spriteName := object.Template.Object.Properties.GetString("sprite")
-         position := pi.Position{X: int(object.X), Y: int(object.Y)}
+         var name string 
+         if object.Type != "" {
+            name = object.Type 
+         } else {
+            name =  object.Template.Object.Properties.GetString("sprite")
+         }
+         position := pi.Position{X: int(object.X), Y: int(object.Y)- gameMap.TileHeight}
          gameObj := GameObject{object, position}
-         posList, ok := objects[spriteName]
+         posList, ok := objects[name]
          if !ok {
             posList = make([]GameObject, 0)
          }
          posList = append(posList, gameObj)
-         objects[spriteName ] = posList 
+         objects[name ] = posList 
        }
    }
 
@@ -50,16 +57,21 @@ type TileMap struct {
     Width  int
     Height int
     //Solid  [][]bool
-    Tiles [][]string
+    Tiles map[string][][]string
 }
 func NewTileMap() TileMap {
-   tiles := make([][]string, gameMap.Height)
+   tiles := make(map[string][][]string)
 
-   for y := range tiles {
-       tiles[y] = make([]string, gameMap.Width)
-   }  
 
    for _, layer := range gameMap.Layers {
+
+      tileLayer := make([][]string, gameMap.Height)
+
+      for y := range tileLayer {
+          tileLayer[y] = make([]string, gameMap.Width)
+      }  
+
+      tiles[layer.Name] = tileLayer
        for pos, tile := range layer.Tiles {
            if tile.Nil {
                continue
@@ -71,7 +83,7 @@ func NewTileMap() TileMap {
                x := pos % gameMap.Width
                y := pos / gameMap.Width
 
-               tiles[y][x] = tt.Type 
+               tileLayer[y][x] = tt.Type 
            //}
        }
    }
@@ -83,6 +95,12 @@ func NewTileMap() TileMap {
 
 //go:embed "assets/tiny_dungeon_tilesheet.png"
 var spritesPNG []byte
+
+//go:embed "assets/character_try_16x16_indexed.png"
+var characterSpritesPNG []byte
+const CharacterSpriteFile = "character_try_16x16_indexed.json"
+const CharacterSpriteDirectory = "./assets"
+const CharacterSpriteStartAnim = "idle_down "
 
 func init() {
    var err error
@@ -100,9 +118,39 @@ type TileSet struct {
    Tiles map[string]pi.Sprite 
 }
 
+func GetObjectGroup(name string) *tiled.ObjectGroup {
+   for _, objectGroup := range gameMap.ObjectGroups {
+      if objectGroup.Name == name {
+         return objectGroup 
+      }
+   }
+   return nil 
+}
+
+func GetObjectFromObjectLayer(objectGroup *tiled.ObjectGroup, name string) *tiled.Object{
+   for _, object := range objectGroup.Objects {
+      if object.Name == name {
+         return object 
+      }
+   }  
+   return nil 
+}
+
+func DrawTileLayer(tileMap *TileMap, layerName string) {
+     layer := tileMap.Tiles[layerName]
+   // Drawing Tiles 
+   for y := 0; y < len(layer); y++ {
+      for x := 0; x < len(layer[y]); x++ {
+            pi.DrawSprite(tileSet.Tiles[layer[y][x]], x*gameMap.TileWidth, y*gameMap.TileHeight)
+      }
+   }
+}
 
 func main() {
+   
    pi.Palette = pi.DecodePalette(spritesPNG)
+   pi.SetTransparency(0, false)
+   pi.SetTransparency(32, true)
    sprites := pi.DecodeCanvas(spritesPNG)
 
    // getting the tiles 
@@ -118,23 +166,46 @@ func main() {
 
    fmt.Println(objectMap.Objects)
    pi.SetScreenSize(256, 144) // set custom screen size
+
+   player := objectMap.Objects["Player"][0]
+   Char := NewCharacter(player, 
+         CharacterSpriteFile, 
+         CharacterSpriteDirectory, 
+         CharacterSpriteStartAnim)
+   Char.SetAction("move_up", pikey.Up)
+   Char.SetAction("move_left", pikey.Left)
+   Char.SetAction("move_right", pikey.Right)
+   Char.SetAction("move_down", pikey.Down)
+   Char.SetAction("shoot_projectile", pikey.Space)   
+
+   pi.Update = func() {
+      Char.Update() 
+   }
+
    pi.Draw = func() {      // draw will be executed each frame
-      picofont.Print("HELLO WORLD", 2, 2)
+      pi.Screen().Clear(32)
 
-      // Drawing Tiles 
-      for y := 0; y < len(tileMap.Tiles); y++ {
-         for x := 0; x < len(tileMap.Tiles[y]); x++ {
-               pi.DrawSprite(tileSet.Tiles[tileMap.Tiles[y][x]], x*gameMap.TileWidth, y*gameMap.TileHeight)
-         }
-      }
+      picofont.Print("TEST GAME", 110, 2)
 
-      // Drawing Objects 
+      // for _, layer := range tileMap.Tiles {
+      //    // Drawing Tiles 
+      //    for y := 0; y < len(layer); y++ {
+      //       for x := 0; x < len(layer[y]); x++ {
+      //             pi.DrawSprite(tileSet.Tiles[layer[y][x]], x*gameMap.TileWidth, y*gameMap.TileHeight)
+      //       }
+      //    }
+      // }
+      DrawTileLayer(&tileMap, "Tile Layer 1")
+      DrawTileLayer(&tileMap, "wallsides")
+
+      // Drawing Static Objects 
       for name, objs := range objectMap.Objects{
          for _, obj := range objs {
             pi.DrawSprite(tileSet.Tiles[name], obj.Pos.X, obj.Pos.Y)
          }
       }
 
+      Char.Draw() 
    }
    piebiten.Run() // run backend
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="Player" type="Player">
+  <properties>
+   <property name="sprite" value="hero_anim"/>
+  </properties>
+  <point/>
+ </object>
+</template>
