@@ -54,23 +54,45 @@ func NewObjectMap() ObjectMap {
       Height: gameMap.Height, Objects: objects}
 }
 
+type Tile struct {
+   SpriteName string 
+   Solid bool 
+   X, Y int 
+   Side *Direction 
+}
+
+func (t *Tile) GetArea() pi.IntArea {
+   if t.Side == nil {
+      return pi.IntArea{t.X, t.Y, 16, 16}
+   } else {
+      if *t.Side == Left {
+         return pi.IntArea{t.X, t.Y, 8, 16}
+      } else if *t.Side == Right {
+         return pi.IntArea{t.X+8, t.Y, 8, 16}
+      } else if *t.Side == Down {
+         return pi.IntArea{t.X, t.Y+8, 16, 8}
+      } else {
+         return pi.IntArea{t.X, t.Y, 16, 16}
+      }
+   }
+}
 
 type TileMap struct {
     Width  int
     Height int
     //Solid  [][]bool
-    Tiles map[string][][]string
+    Tiles map[string][][]Tile
 }
 func NewTileMap() TileMap {
-   tiles := make(map[string][][]string)
+   tiles := make(map[string][][]Tile)
 
 
    for _, layer := range gameMap.Layers {
 
-      tileLayer := make([][]string, gameMap.Height)
+      tileLayer := make([][]Tile, gameMap.Height)
 
       for y := range tileLayer {
-          tileLayer[y] = make([]string, gameMap.Width)
+          tileLayer[y] = make([]Tile, gameMap.Width)
       }  
 
       tiles[layer.Name] = tileLayer
@@ -84,8 +106,29 @@ func NewTileMap() TileMap {
            //if tt.Properties.GetBool("solid") {
                x := pos % gameMap.Width
                y := pos / gameMap.Width
+               fmt.Printf("X: %d Y: %d\n", x, y)
 
-               tileLayer[y][x] = tt.Type 
+
+               hasSide := len(tt.Properties.Get("side")) > 0 
+
+               var Side *Direction 
+               if hasSide {
+                  sideString := tt.Properties.GetString("side")
+                  if sideString == "left" {
+                     side := Left
+                     Side = &side
+                  } else if sideString == "right" {
+                     side := Right
+                     Side = &side
+                  } else if sideString == "up" {
+                     side := Up 
+                     Side = &side
+                  } else if sideString == "down" {
+                     side := Down 
+                     Side = &side
+                  }
+               }
+               tileLayer[y][x] = Tile{tt.Type, tt.Properties.GetBool("solid"), x*gameMap.TileWidth, y*gameMap.TileHeight, Side} 
            //}
        }
    }
@@ -149,7 +192,7 @@ func DrawTileLayer(tileMap *TileMap, layerName string) {
    // Drawing Tiles 
    for y := 0; y < len(layer); y++ {
       for x := 0; x < len(layer[y]); x++ {
-            pi.DrawSprite(tileSet.Tiles[layer[y][x]], x*gameMap.TileWidth, y*gameMap.TileHeight)
+            pi.DrawSprite(tileSet.Tiles[layer[y][x].SpriteName], x*gameMap.TileWidth, y*gameMap.TileHeight)
       }
    }
 }
@@ -157,6 +200,7 @@ func DrawTileLayer(tileMap *TileMap, layerName string) {
 type World struct {
    Player *Character 
    Bombs []*Bomb 
+   TileMap *TileMap 
 }
 
 func Intersects(a, b pi.IntArea) bool {
@@ -203,16 +247,14 @@ func main() {
       bombs = append(bombs, NewBomb(bomb, BombSpriteFile, BombSpriteDirectory, BombSpriteStartAnim))
    }
    
-   world := World{Player: Char, Bombs: bombs}
+   world := World{Player: Char, Bombs: bombs, TileMap: &tileMap}
 
    pi.Update = func() {
+      //WallSystem(&tileMap, &world,  []string{"Tile Layer 1", "wallsides"} )
       BombSystem(&world)
 
-      for _, bomb := range world.Bombs {
-         bomb.Update(&world)
-      }
 
-      Char.Update() 
+      Char.Update(&world) 
    }
 
    pi.Draw = func() {      // draw will be executed each frame

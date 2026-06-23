@@ -2,7 +2,7 @@ package main
 import (
      "github.com/elgopher/pi"
      "slices"
-     "fmt"
+     //"fmt"
 ) 
 
 // Bomb ----
@@ -64,7 +64,7 @@ func BombSystem (w *World) {
     	if Intersects(w.Player.GetArea(), bomb.GetArea()) && !bomb.Detonated {
     		bomb.Detonated = true 
     		bomb.Sprite.Play("explode")
-    		fmt.Println("i'm here ")
+    		//fmt.Println("i'm here ")
     	}
     }
 

@@ -29,6 +29,7 @@ type Character struct {
     Actions map[string]pikey.Key 
     CurrentDirection Direction 
     GameObject GameObject 
+   // CanMove bool 
 }
 
 func (c *Character) SetAction(name string, key pikey.Key) {
@@ -107,39 +108,47 @@ func (c *Character) Draw() {
     c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
 }
 
-func (c *Character) Update() {//Map *CollisionMap) {
+func (c *Character) Update(w *World) {//Map *CollisionMap) {
     //if ebiten.IsKeyPressed(ebiten.KeyUp) {
     if IsKeyPressed(c.Actions["move_up"]) {  
-       // tempY :=  c.PosY - speed 
-       // tempX := c.PosX 
+       tempY :=  c.GameObject.Pos.Y - speed 
+       tempX := c.GameObject.Pos.X 
        //if Map.CanMove(tempX, tempY) {
+        if CanMove(w, tempX, tempY) {
             c.Sprite.Play("walk_up")
             c.GameObject.Pos.Y = c.GameObject.Pos.Y - speed 
             c.CurrentDirection = Up 
+        }
         //}
     } else if IsKeyPressed(c.Actions["move_down"]) {
-       // tempY :=  c.PosY + speed 
-       // tempX := c.PosX 
+        tempY :=  c.GameObject.Pos.Y + speed 
+        tempX := c.GameObject.Pos.X 
         //if Map.CanMove(tempX, tempY) {
+        if CanMove(w, tempX, tempY)  {
             c.Sprite.Play("walk_down")
             c.GameObject.Pos.Y = c.GameObject.Pos.Y + speed 
             c.CurrentDirection = Down 
+        }
         //}
     } else if IsKeyPressed(c.Actions["move_left"]) {
-        // tempX := c.PosX - speed 
-        // tempY := c.PosY 
+        tempX := c.GameObject.Pos.X - speed 
+        tempY := c.GameObject.Pos.Y 
         //if Map.CanMove(tempX, tempY) {
+        if CanMove(w, tempX, tempY)  {
             c.Sprite.Play("walk_left")
             c.GameObject.Pos.X = c.GameObject.Pos.X - speed 
             c.CurrentDirection = Left 
+        }
         //}
     } else if IsKeyPressed(c.Actions["move_right"]) {
-        //tempX := c.PosX + speed 
-        //tempY := c.PosY 
+        tempX := c.GameObject.Pos.X + speed 
+        tempY := c.GameObject.Pos.Y 
        // if Map.CanMove(tempX, tempY) {
+        if CanMove(w, tempX, tempY)  {
             c.Sprite.Play("walk_right")
             c.GameObject.Pos.X = c.GameObject.Pos.X + speed 
             c.CurrentDirection = Right 
+        }
         //}
     } else {
         switch c.CurrentDirection {
