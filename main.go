@@ -30,13 +30,18 @@ func NewObjectMap() ObjectMap {
 
    for _, layer := range gameMap.ObjectGroups {
        for _, object := range layer.Objects  {
+         
          var name string 
          if object.Type != "" {
+            if object.Name == "Door" { fmt.Println("I'm here 1.")}
             name = object.Type 
          } else if object.Template.Object.Type != "" {
             name = object.Template.Object.Type
+                        if object.Name == "Door" { fmt.Println("I'm here 2.")}
          } else {
             name =  object.Template.Object.Properties.GetString("sprite")
+                        if object.Name == "Door" { fmt.Println("I'm here 3.")}
+            fmt.Println(name)
          }
          position := pi.Position{X: int(object.X), Y: int(object.Y)- gameMap.TileHeight}
          gameObj := GameObject{object, position}
@@ -200,6 +205,7 @@ func DrawTileLayer(tileMap *TileMap, layerName string) {
 type World struct {
    Player *Character 
    Bombs []*Bomb 
+   Door *Door 
    TileMap *TileMap 
 }
 
@@ -224,7 +230,7 @@ func main() {
       x, y, width, height := r.Min.X, r.Min.Y, r.Dx(), r.Dy()
       tileSet.Tiles[tile.Type] = pi.SpriteFrom(sprites, x, y, width, height)
    }
-
+   fmt.Println(tileSet.Tiles)
    tileMap := NewTileMap()
    objectMap := NewObjectMap()
 
@@ -247,7 +253,10 @@ func main() {
       bombs = append(bombs, NewBomb(bomb, BombSpriteFile, BombSpriteDirectory, BombSpriteStartAnim))
    }
    
-   world := World{Player: Char, Bombs: bombs, TileMap: &tileMap}
+   doorObj := objectMap.Objects["tile_door_1"][0]
+   door := NewDoor(doorObj, tileSet.Tiles["tile_door_1"], true)
+
+   world := World{Player: Char, Bombs: bombs, Door: &door,  TileMap: &tileMap}
 
    pi.Update = func() {
       //WallSystem(&tileMap, &world,  []string{"Tile Layer 1", "wallsides"} )
@@ -274,11 +283,14 @@ func main() {
       DrawTileLayer(&tileMap, "wallsides")
 
       // Drawing Static Objects 
-      for name, objs := range objectMap.Objects{
-         for _, obj := range objs {
-            pi.DrawSprite(tileSet.Tiles[name], obj.Pos.X, obj.Pos.Y)
-         }
-      }
+      // for name, objs := range objectMap.Objects{
+      //    for _, obj := range objs {
+      //       pi.DrawSprite(tileSet.Tiles[name], obj.Pos.X, obj.Pos.Y)
+      //    }
+      // }
+
+      world.Door.Draw() 
+
       for _, bomb := range world.Bombs {
          bomb.Draw()
       }

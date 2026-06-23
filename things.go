@@ -75,3 +75,20 @@ func BombSystem (w *World) {
 }
 
 // End Bomb --- 
+
+// Door --
+
+type Door struct {
+	Sprite pi.Sprite 
+	GameObject GameObject 
+	Locked bool 
+}
+
+func NewDoor(obj GameObject, sprite pi.Sprite, locked bool) Door {
+	return Door {
+		sprite, obj, locked}
+}
+
+func (d *Door) Draw() {
+	 pi.DrawSprite(d.Sprite, d.GameObject.Pos.X, d.GameObject.Pos.Y)
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <tileset firstgid="1" source="../tiny_dungeon_tilesheet.tsx"/>
+ <object name="Door" gid="18" width="16" height="16">
+  <properties>
+   <property name="next_room" value=""/>
+   <property name="sprite" value="tile_door_1"/>
+  </properties>
+ </object>
+</template>

@@ -22,6 +22,11 @@
  </tile>
  <tile id="7" type="tile_stone_floor_5"/>
  <tile id="16" type="tile_potion"/>
+ <tile id="17" type="tile_door_1">
+  <properties>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="19" type="tile_stone_floor_2"/>
  <tile id="20" type="tile_stone_floor_3"/>
  <tile id="21" type="tile_stone_floor_4"/>
