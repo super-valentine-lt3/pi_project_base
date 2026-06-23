@@ -1,5 +1,5 @@
 { "frames": {
-   "Sprite-0001 0.": {
+   "bomb_explode 0.ase": {
     "frame": { "x": 0, "y": 0, "w": 21, "h": 21 },
     "rotated": false,
     "trimmed": false,
@@ -7,7 +7,7 @@
     "sourceSize": { "w": 21, "h": 21 },
     "duration": 100
    },
-   "Sprite-0001 1.": {
+   "bomb_explode 1.ase": {
     "frame": { "x": 21, "y": 0, "w": 21, "h": 21 },
     "rotated": false,
     "trimmed": false,
@@ -15,7 +15,7 @@
     "sourceSize": { "w": 21, "h": 21 },
     "duration": 100
    },
-   "Sprite-0001 2.": {
+   "bomb_explode 2.ase": {
     "frame": { "x": 42, "y": 0, "w": 21, "h": 21 },
     "rotated": false,
     "trimmed": false,
@@ -23,7 +23,7 @@
     "sourceSize": { "w": 21, "h": 21 },
     "duration": 100
    },
-   "Sprite-0001 3.": {
+   "bomb_explode 3.ase": {
     "frame": { "x": 63, "y": 0, "w": 21, "h": 21 },
     "rotated": false,
     "trimmed": false,
@@ -31,7 +31,7 @@
     "sourceSize": { "w": 21, "h": 21 },
     "duration": 100
    },
-   "Sprite-0001 4.": {
+   "bomb_explode 4.ase": {
     "frame": { "x": 84, "y": 0, "w": 21, "h": 21 },
     "rotated": false,
     "trimmed": false,
@@ -39,7 +39,7 @@
     "sourceSize": { "w": 21, "h": 21 },
     "duration": 100
    },
-   "Sprite-0001 5.": {
+   "bomb_explode 5.ase": {
     "frame": { "x": 105, "y": 0, "w": 21, "h": 21 },
     "rotated": false,
     "trimmed": false,
@@ -47,7 +47,7 @@
     "sourceSize": { "w": 21, "h": 21 },
     "duration": 100
    },
-   "Sprite-0001 6.": {
+   "bomb_explode 6.ase": {
     "frame": { "x": 126, "y": 0, "w": 21, "h": 21 },
     "rotated": false,
     "trimmed": false,
@@ -55,8 +55,16 @@
     "sourceSize": { "w": 21, "h": 21 },
     "duration": 100
    },
-   "Sprite-0001 7.": {
+   "bomb_explode 7.ase": {
     "frame": { "x": 147, "y": 0, "w": 21, "h": 21 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 21, "h": 21 },
+    "sourceSize": { "w": 21, "h": 21 },
+    "duration": 100
+   },
+   "bomb_explode 8.ase": {
+    "frame": { "x": 168, "y": 0, "w": 21, "h": 21 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 21, "h": 21 },
@@ -69,10 +77,11 @@
   "version": "1.1-dev",
   "image": "C:\\Users\\luna-\\Documents\\GameDevelopment\\PixelArt\\bomb_explode.png",
   "format": "I8",
-  "size": { "w": 168, "h": 21 },
+  "size": { "w": 189, "h": 21 },
   "scale": "1",
   "frameTags": [
-   { "name": "explode", "from": 0, "to": 7, "direction": "forward" }
+   { "name": "normal", "from": 0, "to": 0, "direction": "forward" },
+   { "name": "explode", "from": 1, "to": 8, "direction": "forward" }
   ],
   "layers": [
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }

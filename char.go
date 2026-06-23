@@ -35,6 +35,9 @@ func (c *Character) SetAction(name string, key pikey.Key) {
     c.Actions[name] = key 
 }
 
+func (c *Character) GetArea() pi.IntArea {
+    return pi.IntArea{c.GameObject.Pos.X, c.GameObject.Pos.Y, 16, 16}
+}
 
 type SpriteAnim struct {
     Sprite    *goaseprite.File
@@ -50,7 +53,7 @@ func (sprite *SpriteAnim) Update(delta float32) {
 }
 
 func NewSpriteAnim(data []byte, 
-    file string, directory string, start_anim string) *SpriteAnim {
+    file string, directory string, start_anim string, width int, height int, playSpeed int) *SpriteAnim {
     //sprite, err := goaseprite.Open("character_base_16x16.json", os.DirFS("./assets"))
     
     sprite, err := goaseprite.Open(file, os.DirFS(directory))
@@ -64,11 +67,15 @@ func NewSpriteAnim(data []byte,
 
     spriteAnim.AsePlayer = spriteAnim.Sprite.CreatePlayer()
 
+    if playSpeed > 0 {
+        spriteAnim.AsePlayer.PlaySpeed = float32(playSpeed)
+    }
+
     sprites := pi.DecodeCanvas(data)
 
     spriteAnim.SpriteSheet = make(map[pi.IntArea]pi.Sprite)
     for _, frame := range sprite.Frames {
-        spriteAnim.SpriteSheet[pi.IntArea{frame.X, frame.Y, 16, 16}] = pi.SpriteFrom(sprites, frame.X, frame.Y, 16, 16)
+        spriteAnim.SpriteSheet[pi.IntArea{frame.X, frame.Y, width, height}] = pi.SpriteFrom(sprites, frame.X, frame.Y, width, height)
     }
 
     spriteAnim.AsePlayer.Play(start_anim)
@@ -86,7 +93,7 @@ func NewCharacter(obj GameObject,
             sprite_directory string, 
             default_anim string ) *Character{
     character := &Character{}
-    spriteAnim := NewSpriteAnim(characterSpritesPNG, sprite_file, sprite_directory, default_anim)
+    spriteAnim := NewSpriteAnim(characterSpritesPNG, sprite_file, sprite_directory, default_anim, 16, 16, -1)
     character.Sprite = spriteAnim
     character.GameObject = obj
 

@@ -3,6 +3,7 @@
  <tileset firstgid="1" source="../tiny_dungeon_tilesheet.tsx"/>
  <object name="Bomb" type="Bomb" gid="1" width="16" height="16">
   <properties>
+   <property name="solid" type="bool" value="true"/>
    <property name="sprite" value="bomb_anim"/>
   </properties>
  </object>

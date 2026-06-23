@@ -154,6 +154,18 @@ func DrawTileLayer(tileMap *TileMap, layerName string) {
    }
 }
 
+type World struct {
+   Player *Character 
+   Bombs []*Bomb 
+}
+
+func Intersects(a, b pi.IntArea) bool {
+    return ((a.X < b.X + b.W) &&
+        (a.X + a.W > b.X) &&
+        (a.Y < b.Y + b.H) && (a.Y + a.H > b.Y))
+    
+}
+
 func main() {
    
    pi.Palette = pi.DecodePalette(spritesPNG)
@@ -191,7 +203,15 @@ func main() {
       bombs = append(bombs, NewBomb(bomb, BombSpriteFile, BombSpriteDirectory, BombSpriteStartAnim))
    }
    
+   world := World{Player: Char, Bombs: bombs}
+
    pi.Update = func() {
+      BombSystem(&world)
+
+      for _, bomb := range world.Bombs {
+         bomb.Update(&world)
+      }
+
       Char.Update() 
    }
 
@@ -217,12 +237,11 @@ func main() {
             pi.DrawSprite(tileSet.Tiles[name], obj.Pos.X, obj.Pos.Y)
          }
       }
+      for _, bomb := range world.Bombs {
+         bomb.Draw()
+      }
 
       Char.Draw() 
-      for _, bomb := range bombs {
-         bomb.Draw()
-         fmt.Println(bomb.Sprite)
-      }
    }
    piebiten.Run() // run backend
 }
