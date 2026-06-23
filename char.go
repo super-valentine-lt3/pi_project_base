@@ -38,7 +38,7 @@ func (c *Character) AddPoints(points int) {
 }
 
 func (c *Character) DecreaseHealth(damage int) {
-    c.Points -= points 
+    c.Health -= damage 
 }
 
 func (c *Character) SetAction(name string, key pikey.Key) {
@@ -109,7 +109,7 @@ func NewCharacter(obj GameObject,
 
     character.Actions = make(map[string]pikey.Key)
     character.CurrentDirection = Down 
-
+    character.Health = 100 
     return character
 }
 

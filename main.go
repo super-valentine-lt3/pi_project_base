@@ -11,7 +11,7 @@ import (
 )
 
 //const mapPath = "assets/room_test_1.tmx" // Path to your Tiled Map.
-const mapPath = "assets/room_test_2.tmx" // Path to your Tiled Map.
+const mapPath = "assets/room_test_3.tmx" // Path to your Tiled Map.
 
 var gameMap *tiled.Map 
 var tileSet TileSet 

@@ -8,6 +8,6 @@ import (
 
 func UISystem(w *World) {
 
-      picofont.Print(fmt.Sprintf("POINTS: %d", w.Player.Points), 110, 2)
+      picofont.Print(fmt.Sprintf("POINTS: %d  HEALTH: %d", w.Player.Points, w.Player.Health), 85, 2)
 
 }

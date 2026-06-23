@@ -67,6 +67,7 @@ func BombSystem (w *World) {
     	if Intersects(w.Player.GetArea(), bomb.GetArea()) && !bomb.Detonated {
     		bomb.Detonated = true 
     		bomb.Sprite.Play("explode")
+    		w.Player.DecreaseHealth(10)
     		//fmt.Println("i'm here ")
     	}
     }
