@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="16" height="9" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="27">
+ <tileset firstgid="1" source="tiny_dungeon_tilesheet.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="16" height="9">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,5,6,5,0,6,7,5,6,0,0,0,0,
+0,0,0,4,21,4,21,4,21,4,21,4,21,0,0,0,
+0,0,0,21,4,21,22,20,20,20,21,22,20,0,0,0,
+0,0,0,4,21,4,21,4,21,20,21,20,20,0,0,0,
+0,0,0,22,20,21,20,22,4,20,22,20,22,0,0,0,
+0,0,0,4,22,21,22,4,21,22,21,4,21,0,0,0,
+0,0,0,0,4,21,4,21,20,21,20,21,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="wallsides" width="16" height="9">
+  <data encoding="csv">
+0,0,0,0,24,25,24,25,24,25,24,25,0,0,0,0,
+0,0,0,24,26,0,0,0,0,0,0,23,25,0,0,0,
+0,0,0,26,0,0,0,0,0,0,0,0,23,0,0,0,
+0,0,0,26,0,0,0,0,0,0,0,0,23,0,0,0,
+0,0,0,26,0,0,0,0,0,0,0,0,23,0,0,0,
+0,0,0,26,0,0,0,0,0,0,0,0,23,0,0,0,
+0,0,0,26,0,0,0,0,0,0,0,0,23,0,0,0,
+0,0,0,23,24,25,24,0,0,25,24,25,26,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="2" name="Object Layer 1">
+  <object id="19" template="templates/Player.tx" type="Player" x="128" y="112"/>
+  <object id="21" template="templates/door.tx" x="112" y="32"/>
+  <object id="23" template="templates/gem.tx" x="80" y="64">
+   <properties>
+    <property name="paletteTo" value="19,2,3"/>
+    <property name="points" type="int" value="15"/>
+   </properties>
+  </object>
+  <object id="24" template="templates/gem.tx" x="160" y="64">
+   <properties>
+    <property name="paletteTo" value="19,2,3"/>
+    <property name="points" type="int" value="15"/>
+   </properties>
+  </object>
+  <object id="25" template="templates/gem.tx" x="80" y="96"/>
+  <object id="26" template="templates/gem.tx" x="160" y="96"/>
+ </objectgroup>
+</map>

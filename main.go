@@ -2,7 +2,7 @@ package main
    
 import (
    "github.com/elgopher/pi"          // import pi core package
-   "github.com/elgopher/pi/picofont" // import very small pico-8 font
+   //"github.com/elgopher/pi/picofont" // import very small pico-8 font
    "github.com/elgopher/pi/piebiten" // import backend
     "github.com/lafriks/go-tiled"
     _ "embed"
@@ -10,7 +10,9 @@ import (
    "github.com/elgopher/pi/pikey"
 )
 
-const mapPath = "assets/room_test_1.tmx" // Path to your Tiled Map.
+//const mapPath = "assets/room_test_1.tmx" // Path to your Tiled Map.
+const mapPath = "assets/room_test_2.tmx" // Path to your Tiled Map.
+
 var gameMap *tiled.Map 
 var tileSet TileSet 
 
@@ -33,14 +35,11 @@ func NewObjectMap() ObjectMap {
          
          var name string 
          if object.Type != "" {
-            if object.Name == "Door" { fmt.Println("I'm here 1.")}
             name = object.Type 
          } else if object.Template.Object.Type != "" {
             name = object.Template.Object.Type
-                        if object.Name == "Door" { fmt.Println("I'm here 2.")}
          } else {
             name =  object.Template.Object.Properties.GetString("sprite")
-                        if object.Name == "Door" { fmt.Println("I'm here 3.")}
             fmt.Println(name)
          }
          position := pi.Position{X: int(object.X), Y: int(object.Y)- gameMap.TileHeight}
@@ -206,6 +205,7 @@ type World struct {
    Player *Character 
    Bombs []*Bomb 
    Door *Door 
+   Gems []*Gem 
    TileMap *TileMap 
 }
 
@@ -213,7 +213,12 @@ func Intersects(a, b pi.IntArea) bool {
     return ((a.X < b.X + b.W) &&
         (a.X + a.W > b.X) &&
         (a.Y < b.Y + b.H) && (a.Y + a.H > b.Y))
-    
+}
+
+func IntersectsTouch(a, b pi.IntArea) bool {
+    return ((a.X <= b.X + b.W) &&
+        (a.X + a.W >= b.X) &&
+        (a.Y <= b.Y + b.H) && (a.Y + a.H >= b.Y))
 }
 
 func main() {
@@ -230,11 +235,11 @@ func main() {
       x, y, width, height := r.Min.X, r.Min.Y, r.Dx(), r.Dy()
       tileSet.Tiles[tile.Type] = pi.SpriteFrom(sprites, x, y, width, height)
    }
-   fmt.Println(tileSet.Tiles)
+   //fmt.Println(tileSet.Tiles)
    tileMap := NewTileMap()
    objectMap := NewObjectMap()
 
-   fmt.Println(objectMap.Objects)
+   //fmt.Println(objectMap.Objects)
    pi.SetScreenSize(256, 144) // set custom screen size
 
    player := objectMap.Objects["Player"][0]
@@ -246,7 +251,7 @@ func main() {
    Char.SetAction("move_left", pikey.Left)
    Char.SetAction("move_right", pikey.Right)
    Char.SetAction("move_down", pikey.Down)
-   Char.SetAction("shoot_projectile", pikey.Space)   
+   Char.SetAction("interact", pikey.Space)   
 
    bombs := make([]*Bomb, 0)
    for _, bomb := range objectMap.Objects["Bomb"] {
@@ -256,20 +261,26 @@ func main() {
    doorObj := objectMap.Objects["tile_door_1"][0]
    door := NewDoor(doorObj, tileSet.Tiles["tile_door_1"], true)
 
-   world := World{Player: Char, Bombs: bombs, Door: &door,  TileMap: &tileMap}
+   gems := make([]*Gem, 0)
+    for _, gem := range objectMap.Objects["Gem"] {
+      gems = append(gems, NewGem(gem, tileSet.Tiles["tile_gem"]))
+   }
+  
+   world := World{Player: Char, Bombs: bombs, Door: &door, Gems: gems, TileMap: &tileMap}
 
    pi.Update = func() {
       //WallSystem(&tileMap, &world,  []string{"Tile Layer 1", "wallsides"} )
       BombSystem(&world)
-
-
+      DoorSystem(&world)
+      GemSystem(&world)
       Char.Update(&world) 
    }
 
    pi.Draw = func() {      // draw will be executed each frame
       pi.Screen().Clear(32)
 
-      picofont.Print("TEST GAME", 110, 2)
+      // picofont.Print("TEST GAME", 110, 2)
+      UISystem(&world)
 
       // for _, layer := range tileMap.Tiles {
       //    // Drawing Tiles 
@@ -293,6 +304,9 @@ func main() {
 
       for _, bomb := range world.Bombs {
          bomb.Draw()
+      }
+      for _, gem := range world.Gems {
+         gem.Draw()
       }
 
       Char.Draw() 

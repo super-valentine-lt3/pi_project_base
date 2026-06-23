@@ -30,6 +30,15 @@ type Character struct {
     CurrentDirection Direction 
     GameObject GameObject 
    // CanMove bool 
+    Points int 
+    Health int 
+}
+func (c *Character) AddPoints(points int) {
+    c.Points += points 
+}
+
+func (c *Character) DecreaseHealth(damage int) {
+    c.Points -= points 
 }
 
 func (c *Character) SetAction(name string, key pikey.Key) {

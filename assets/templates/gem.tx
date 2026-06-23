@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
  <tileset firstgid="1" source="../tiny_dungeon_tilesheet.tsx"/>
- <object gid="2" width="16" height="16">
+ <object name="Gem" type="Gem" gid="2" width="16" height="16">
   <properties>
+   <property name="paletteFrom" value="10,13,15"/>
+   <property name="points" type="int" value="10"/>
    <property name="sprite" value="tile_gem"/>
   </properties>
  </object>

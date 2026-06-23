@@ -2,7 +2,10 @@ package main
 import (
      "github.com/elgopher/pi"
      "slices"
-     //"fmt"
+     "fmt"
+     "strings"
+     "strconv" 
+     "log"
 ) 
 
 // Bomb ----
@@ -91,4 +94,94 @@ func NewDoor(obj GameObject, sprite pi.Sprite, locked bool) Door {
 
 func (d *Door) Draw() {
 	 pi.DrawSprite(d.Sprite, d.GameObject.Pos.X, d.GameObject.Pos.Y)
+}
+
+func (d *Door) GetArea() pi.IntArea {
+    return pi.IntArea{d.GameObject.Pos.X, d.GameObject.Pos.Y, 16, 16}
+}
+
+
+func DoorSystem(world *World) {
+	if IntersectsTouch(world.Door.GetArea(), world.Player.GetArea()) && 
+		IsKeyPressed(world.Player.Actions["interact"]) {
+		fmt.Println("Trying to enter")
+	}
+}
+
+// Gem ---
+/**
+ *  Gems give points 
+ *  Points shown in UI
+ *  Points on Character
+ *  Points increased after collecting 
+ * */
+type Gem struct {
+	Sprite pi.Sprite 
+	GameObject GameObject 
+	paletteMap map[int]int 
+	PointValue int 
+}
+
+func NewGem(obj GameObject, sprite pi.Sprite) *Gem {
+	
+	var paletteMap map[int]int = nil 
+	from := obj.Config.Template.Object.Properties.GetString("paletteFrom")
+	to := obj.Config.Properties.GetString("paletteTo")
+	if to != "" {
+		paletteMap = make(map[int]int)
+		fromList := strings.Split(from, ",")
+		toList := strings.Split(to, ",")
+		for i := 0; i < len(fromList); i++ {
+			fromVal, err := strconv.Atoi(fromList[i])
+			if err != nil {
+				log.Fatalf("Conversion failed: %v", err)
+			}
+			toVal, err := strconv.Atoi(toList[i])
+			if err != nil {
+				log.Fatalf("Conversion failed: %v", err)
+			}
+			paletteMap[fromVal] = toVal
+		}
+	}
+	var usedPoints int 
+	customPoints := obj.Config.Properties.GetInt("points")
+	if customPoints == 0 {
+		usedPoints = obj.Config.Template.Object.Properties.GetInt("points")
+	} else {
+		usedPoints = customPoints
+	}
+	return &Gem {
+		sprite, obj, paletteMap, usedPoints}
+}
+
+func ResetPalette() {
+   pi.ResetColorTables()
+   pi.SetTransparency(0, false)
+   pi.SetTransparency(32, true)
+}
+
+func (d *Gem) Draw() {
+	if d.paletteMap == nil {
+	 	pi.DrawSprite(d.Sprite, d.GameObject.Pos.X, d.GameObject.Pos.Y)
+	} else {
+		for fromColor, toColor := range d.paletteMap {
+			pi.RemapColor(pi.Color(fromColor), pi.Color(toColor))
+		}
+		pi.DrawSprite(d.Sprite, d.GameObject.Pos.X, d.GameObject.Pos.Y)
+		ResetPalette()
+	}
+}
+
+func (d *Gem) GetArea() pi.IntArea {
+    return pi.IntArea{d.GameObject.Pos.X, d.GameObject.Pos.Y, 16, 16}
+}
+
+func GemSystem (w *World) {
+    w.Gems = slices.DeleteFunc(w.Gems, func(g *Gem) bool {
+    	if Intersects(w.Player.GetArea(), g.GetArea()) {
+    		w.Player.AddPoints(g.PointValue)
+    		return true 
+    	}
+        return false 
+    }) 
 }
