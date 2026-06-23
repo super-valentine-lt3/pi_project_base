@@ -7,9 +7,9 @@ import (
     "github.com/lafriks/go-tiled"
     _ "embed"
     "fmt"
-        "github.com/elgopher/pi/pikey"
-
+   "github.com/elgopher/pi/pikey"
 )
+
 const mapPath = "assets/room_test_1.tmx" // Path to your Tiled Map.
 var gameMap *tiled.Map 
 var tileSet TileSet 
@@ -33,6 +33,8 @@ func NewObjectMap() ObjectMap {
          var name string 
          if object.Type != "" {
             name = object.Type 
+         } else if object.Template.Object.Type != "" {
+            name = object.Template.Object.Type
          } else {
             name =  object.Template.Object.Properties.GetString("sprite")
          }
@@ -101,6 +103,12 @@ var characterSpritesPNG []byte
 const CharacterSpriteFile = "character_try_16x16_indexed.json"
 const CharacterSpriteDirectory = "./assets"
 const CharacterSpriteStartAnim = "idle_down "
+
+//go:embed "assets/bomb_explode.png"
+var bombSpritesPNG []byte
+const BombSpriteFile = "bomb_explode.json"
+const BombSpriteDirectory = "./assets"
+const BombSpriteStartAnim = "normal"
 
 func init() {
    var err error
@@ -178,6 +186,11 @@ func main() {
    Char.SetAction("move_down", pikey.Down)
    Char.SetAction("shoot_projectile", pikey.Space)   
 
+   bombs := make([]*Bomb, 0)
+   for _, bomb := range objectMap.Objects["Bomb"] {
+      bombs = append(bombs, NewBomb(bomb, BombSpriteFile, BombSpriteDirectory, BombSpriteStartAnim))
+   }
+   
    pi.Update = func() {
       Char.Update() 
    }
@@ -206,6 +219,10 @@ func main() {
       }
 
       Char.Draw() 
+      for _, bomb := range bombs {
+         bomb.Draw()
+         fmt.Println(bomb.Sprite)
+      }
    }
    piebiten.Run() // run backend
 }

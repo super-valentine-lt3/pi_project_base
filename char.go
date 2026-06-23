@@ -5,7 +5,7 @@ import (
     "github.com/elgopher/pi/pikey"
     "github.com/solarlune/goaseprite"
     "os"
-    "fmt"
+    //"fmt"
 )
 
 func IsKeyPressed(key pikey.Key) bool {
@@ -43,14 +43,13 @@ type SpriteAnim struct {
 }
 
 func (sprite *SpriteAnim) Play(animation string) {
-    fmt.Println(animation)
     sprite.AsePlayer.Play(animation)
 }
 func (sprite *SpriteAnim) Update(delta float32) {
     sprite.AsePlayer.Update(delta)
 }
 
-func NewSpriteAnim(
+func NewSpriteAnim(data []byte, 
     file string, directory string, start_anim string) *SpriteAnim {
     //sprite, err := goaseprite.Open("character_base_16x16.json", os.DirFS("./assets"))
     
@@ -65,7 +64,7 @@ func NewSpriteAnim(
 
     spriteAnim.AsePlayer = spriteAnim.Sprite.CreatePlayer()
 
-    sprites := pi.DecodeCanvas(characterSpritesPNG)
+    sprites := pi.DecodeCanvas(data)
 
     spriteAnim.SpriteSheet = make(map[pi.IntArea]pi.Sprite)
     for _, frame := range sprite.Frames {
@@ -87,7 +86,7 @@ func NewCharacter(obj GameObject,
             sprite_directory string, 
             default_anim string ) *Character{
     character := &Character{}
-    spriteAnim := NewSpriteAnim(sprite_file, sprite_directory, default_anim)
+    spriteAnim := NewSpriteAnim(characterSpritesPNG, sprite_file, sprite_directory, default_anim)
     character.Sprite = spriteAnim
     character.GameObject = obj
 
