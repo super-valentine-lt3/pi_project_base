@@ -8,6 +8,8 @@ import (
     _ "embed"
     "fmt"
    "github.com/elgopher/pi/pikey"
+     // "github.com/elgopher/pi/pigui"
+
 )
 
 //const mapPath = "assets/room_test_1.tmx" // Path to your Tiled Map.
@@ -264,16 +266,28 @@ func main() {
    }
 
    world := World{Player: Char, Bombs: bombs, Door: &door, Gems: gems, Bats: bats, TileMap: &tileMap}
+   
+   //pausePanelRoot = pigui.New()
+   // add a panel (container) at global coordinates
+   //attachPanel(pausePanelRoot, 100, 48, 63, 32)
+   // add buttons to the panel using its local coordinate system
+   //attachButton(panel, 10, 9, 44, 14, "BUTTON 1")
+   //attachButton(panel, 10, 25, 44, 14, "BUTTON 2")
 
    pi.Update = func() {
       //WallSystem(&tileMap, &world,  []string{"Tile Layer 1", "wallsides"} )
-      BombSystem(&world)
-      DoorSystem(&world)
-      GemSystem(&world)
-      for _, bat := range world.Bats {
-         bat.Update(&world)
+      PauseSystem()
+      if !Paused {
+         BombSystem(&world)
+         DoorSystem(&world)
+         GemSystem(&world)
+         for _, bat := range world.Bats {
+            bat.Update(&world)
+         }
+         Char.Update(&world) 
+      } else {
+         pausePanelRoot.Update()
       }
-      Char.Update(&world) 
    }
 
    pi.Draw = func() {      // draw will be executed each frame
@@ -313,6 +327,10 @@ func main() {
       }
 
       Char.Draw() 
+
+      if Paused {
+         pausePanelRoot.Draw()
+      }
    }
    piebiten.Run() // run backend
 }

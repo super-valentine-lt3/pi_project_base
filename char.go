@@ -9,6 +9,11 @@ import (
     //"fmt"
 )
 
+func IsKeyPressedDuration(key pikey.Key, duration int) bool {
+    return pikey.Duration(key) > duration
+}
+
+ 
 func IsKeyPressed(key pikey.Key) bool {
     return pikey.Duration(key) > 0
 }
