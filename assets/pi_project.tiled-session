@@ -15,7 +15,7 @@
     "openFiles": [
     ],
     "project": "pi_project.tiled-project",
-    "property.type": "int",
+    "property.type": "string",
     "recentFiles": [
     ],
     "tileset.lastUsedFormat": "tsx",

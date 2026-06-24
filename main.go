@@ -145,17 +145,8 @@ func NewTileMap() TileMap {
 //go:embed "assets/tiny_dungeon_tilesheet.png"
 var spritesPNG []byte
 
-//go:embed "assets/character_try_16x16_indexed.png"
-var characterSpritesPNG []byte
-const CharacterSpriteFile = "character_try_16x16_indexed.json"
-const CharacterSpriteDirectory = "./assets"
-const CharacterSpriteStartAnim = "idle_down "
 
-//go:embed "assets/bomb_explode.png"
-var bombSpritesPNG []byte
-const BombSpriteFile = "bomb_explode.json"
-const BombSpriteDirectory = "./assets"
-const BombSpriteStartAnim = "normal"
+
 
 func init() {
    var err error
@@ -206,6 +197,7 @@ type World struct {
    Bombs []*Bomb 
    Door *Door 
    Gems []*Gem 
+   Bats []*Bat 
    TileMap *TileMap 
 }
 
@@ -262,17 +254,25 @@ func main() {
    door := NewDoor(doorObj, tileSet.Tiles["tile_door_1"], true)
 
    gems := make([]*Gem, 0)
-    for _, gem := range objectMap.Objects["Gem"] {
+   for _, gem := range objectMap.Objects["Gem"] {
       gems = append(gems, NewGem(gem, tileSet.Tiles["tile_gem"]))
    }
-  
-   world := World{Player: Char, Bombs: bombs, Door: &door, Gems: gems, TileMap: &tileMap}
+   
+   bats := make([]*Bat, 0)
+   for _, bat := range objectMap.Objects["Bat"] {
+      bats = append(bats, NewBat(bat))
+   }
+
+   world := World{Player: Char, Bombs: bombs, Door: &door, Gems: gems, Bats: bats, TileMap: &tileMap}
 
    pi.Update = func() {
       //WallSystem(&tileMap, &world,  []string{"Tile Layer 1", "wallsides"} )
       BombSystem(&world)
       DoorSystem(&world)
       GemSystem(&world)
+      for _, bat := range world.Bats {
+         bat.Update(&world)
+      }
       Char.Update(&world) 
    }
 
@@ -307,6 +307,9 @@ func main() {
       }
       for _, gem := range world.Gems {
          gem.Draw()
+      }
+      for _, bat := range world.Bats {
+         bat.Draw()
       }
 
       Char.Draw() 

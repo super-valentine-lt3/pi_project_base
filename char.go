@@ -5,6 +5,7 @@ import (
     "github.com/elgopher/pi/pikey"
     "github.com/solarlune/goaseprite"
     "os"
+    _ "embed"
     //"fmt"
 )
 
@@ -23,6 +24,12 @@ const (
 )
 
 var CurrentDirection = Down 
+
+//go:embed "assets/character_try_16x16_indexed.png"
+var characterSpritesPNG []byte
+const CharacterSpriteFile = "character_try_16x16_indexed.json"
+const CharacterSpriteDirectory = "./assets"
+const CharacterSpriteStartAnim = "idle_down "
 
 type Character struct {
     Sprite *SpriteAnim 

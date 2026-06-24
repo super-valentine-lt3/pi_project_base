@@ -6,10 +6,16 @@ import (
      "strings"
      "strconv" 
      "log"
+     _ "embed"
 ) 
 
 // Bomb ----
 
+//go:embed "assets/bomb_explode.png"
+var bombSpritesPNG []byte
+const BombSpriteFile = "bomb_explode.json"
+const BombSpriteDirectory = "./assets"
+const BombSpriteStartAnim = "normal"
 
 type Bomb struct {
 	Sprite *SpriteAnim 
@@ -186,3 +192,33 @@ func GemSystem (w *World) {
         return false 
     }) 
 }
+
+// --- bat
+
+//go:embed "assets/mybat.png"
+var batSpritesPNG []byte
+const BatSpriteFile = "mybat.json"
+const BatSpriteDirectory = "./assets"
+const BatSpriteStartAnim = "normal"
+
+type Bat struct {
+	Sprite *SpriteAnim 
+	GameObject GameObject 
+}
+
+func NewBat(obj GameObject) *Bat{
+    bat := &Bat{}
+    spriteAnim := NewSpriteAnim(batSpritesPNG, BatSpriteFile, BatSpriteDirectory, BatSpriteStartAnim, 16, 16, 4)
+    bat.Sprite = spriteAnim
+    bat.GameObject = obj
+    return bat
+}
+
+func (b *Bat) Draw() {
+    b.Sprite.Draw(b.GameObject.Pos.X, b.GameObject.Pos.Y)    
+}
+
+func (b *Bat) Update(w *World) {
+	b.Sprite.Update(float32(1.0 / 60.0))
+}
+
