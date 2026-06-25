@@ -44,13 +44,18 @@ type Character struct {
    // CanMove bool 
     Points int 
     Health int 
+    DamageCooldown int 
+    DamageCooldownActive bool 
 }
 func (c *Character) AddPoints(points int) {
     c.Points += points 
 }
 
 func (c *Character) DecreaseHealth(damage int) {
-    c.Health -= damage 
+    if c.DamageCooldownActive == false {
+        c.Health -= damage 
+        c.DamageCooldownActive = true 
+    }
 }
 
 func (c *Character) SetAction(name string, key pikey.Key) {
@@ -65,6 +70,15 @@ type SpriteAnim struct {
     Sprite    *goaseprite.File
     AsePlayer *goaseprite.Player
     SpriteSheet   map[pi.IntArea]pi.Sprite  
+    DefaultSpeed float32
+}
+
+func (sprite *SpriteAnim) SetSpeed(speed float32) {
+    if speed == -1 {
+        sprite.AsePlayer.PlaySpeed = sprite.DefaultSpeed
+    } else {
+        sprite.AsePlayer.PlaySpeed = float32(speed)
+    }
 }
 
 func (sprite *SpriteAnim) Play(animation string) {
@@ -75,7 +89,7 @@ func (sprite *SpriteAnim) Update(delta float32) {
 }
 
 func NewSpriteAnim(data []byte, 
-    file string, directory string, start_anim string, width int, height int, playSpeed int) *SpriteAnim {
+    file string, directory string, start_anim string, width int, height int, playSpeed float32) *SpriteAnim {
     //sprite, err := goaseprite.Open("character_base_16x16.json", os.DirFS("./assets"))
     
     sprite, err := goaseprite.Open(file, os.DirFS(directory))
@@ -89,6 +103,7 @@ func NewSpriteAnim(data []byte,
 
     spriteAnim.AsePlayer = spriteAnim.Sprite.CreatePlayer()
 
+    spriteAnim.DefaultSpeed = spriteAnim.AsePlayer.PlaySpeed
     if playSpeed > 0 {
         spriteAnim.AsePlayer.PlaySpeed = float32(playSpeed)
     }
@@ -115,13 +130,14 @@ func NewCharacter(obj GameObject,
             sprite_directory string, 
             default_anim string ) *Character{
     character := &Character{}
-    spriteAnim := NewSpriteAnim(characterSpritesPNG, sprite_file, sprite_directory, default_anim, 16, 16, -1)
+    spriteAnim := NewSpriteAnim(characterSpritesPNG, sprite_file, sprite_directory, default_anim, 16, 16, -1.0)
     character.Sprite = spriteAnim
     character.GameObject = obj
 
     character.Actions = make(map[string]pikey.Key)
     character.CurrentDirection = Down 
     character.Health = 100 
+    character.DamageCooldown = 25 // frames 
     return character
 }
 
@@ -186,5 +202,12 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
         }
     }
 
+    if c.DamageCooldownActive {
+        c.DamageCooldown -= 1 
+        if c.DamageCooldown <= 0 {
+            c.DamageCooldownActive = false 
+            c.DamageCooldown = 25 
+        }
+    }
     c.Sprite.Update(float32(1.0 / 60.0))
 }

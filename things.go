@@ -7,7 +7,13 @@ import (
      "strconv" 
      "log"
      _ "embed"
+    "math/rand/v2"
 ) 
+
+// Inclusive 
+func Random(Min, Max int) int {
+	return Min + rand.IntN((Max+1)-Min)
+}
 
 // Bomb ----
 
@@ -29,7 +35,7 @@ func NewBomb(obj GameObject,
             sprite_directory string, 
             default_anim string ) *Bomb{
     bomb := &Bomb{}
-    spriteAnim := NewSpriteAnim(bombSpritesPNG, sprite_file, sprite_directory, default_anim, 21, 21, 4)
+    spriteAnim := NewSpriteAnim(bombSpritesPNG, sprite_file, sprite_directory, default_anim, 21, 21, 4.0)
     spriteAnim.AsePlayer.OnFrameChange = func() {
     	if spriteAnim.AsePlayer.CurrentTag.Name == "explode" {
     		if spriteAnim.AsePlayer.FrameIndex == 8 {
@@ -208,7 +214,7 @@ type Bat struct {
 
 func NewBat(obj GameObject) *Bat{
     bat := &Bat{}
-    spriteAnim := NewSpriteAnim(batSpritesPNG, BatSpriteFile, BatSpriteDirectory, BatSpriteStartAnim, 16, 16, 4)
+    spriteAnim := NewSpriteAnim(batSpritesPNG, BatSpriteFile, BatSpriteDirectory, BatSpriteStartAnim, 16, 16, 4.0)
     bat.Sprite = spriteAnim
     bat.GameObject = obj
     return bat
@@ -221,4 +227,102 @@ func (b *Bat) Draw() {
 func (b *Bat) Update(w *World) {
 	b.Sprite.Update(float32(1.0 / 60.0))
 }
+
+// --- spider
+//go:embed "assets/crab_try.png"
+var crabSpritesPNG []byte
+const CrabSpriteFile = "crab_try.json"
+const CrabSpriteDirectory = "./assets"
+const CrabSpriteStartAnim = "idle"
+
+type Crab struct {
+	Sprite *SpriteAnim 
+	GameObject GameObject 
+	Dir Direction 
+	Timer float64 
+	InitTime float64 
+	MoveAnimSpeed float32
+	IdleAnimSpeed float32 
+	Idle bool 
+}
+
+func NewCrab(obj GameObject) *Crab{
+    crab := &Crab{}
+    spriteAnim := NewSpriteAnim(crabSpritesPNG, CrabSpriteFile,
+    					       CrabSpriteDirectory, CrabSpriteStartAnim, 16, 16, -1.0)
+    crab.Sprite = spriteAnim
+    crab.GameObject = obj
+    crab.InitTime = pi.Time 
+    crab.Timer = 4.0 
+    crab.MoveAnimSpeed = .75 
+    crab.IdleAnimSpeed = -1.0 
+    crab.Idle = true 
+    return crab
+}
+
+func (c *Crab) Draw() {
+    c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
+}
+
+func (c *Crab) Update(w *World) {
+	if pi.Time - c.InitTime >= c.Timer {
+		if c.Idle {
+			c.Sprite.Play("move")
+			c.Sprite.SetSpeed(c.MoveAnimSpeed)
+			c.Dir = Direction(Random(0, 3))
+			c.InitTime = pi.Time 
+			c.Idle = false 
+		} else {
+			c.Sprite.Play("idle")
+			c.Sprite.SetSpeed(c.IdleAnimSpeed)
+			c.InitTime = pi.Time 
+			c.Idle = true 
+		}
+	} else if !c.Idle {
+		 if c.Dir == Up {  
+	       tempY :=  c.GameObject.Pos.Y - speed 
+	       tempX := c.GameObject.Pos.X 
+	        if CanMove(w, tempX, tempY) {
+	            c.GameObject.Pos.Y = c.GameObject.Pos.Y - speed 
+	        }
+	    } else if c.Dir == Down {
+	        tempY :=  c.GameObject.Pos.Y + speed 
+	        tempX := c.GameObject.Pos.X 
+	        if CanMove(w, tempX, tempY)  {
+	            c.GameObject.Pos.Y = c.GameObject.Pos.Y + speed 
+	        }
+	    } else if c.Dir == Left {
+	        tempX := c.GameObject.Pos.X - speed 
+	        tempY := c.GameObject.Pos.Y 
+	        if CanMove(w, tempX, tempY)  {
+	            c.GameObject.Pos.X = c.GameObject.Pos.X - speed 
+	        }
+	    } else if c.Dir == Right {
+	        tempX := c.GameObject.Pos.X + speed 
+	        tempY := c.GameObject.Pos.Y 
+	        if CanMove(w, tempX, tempY)  {
+	            c.GameObject.Pos.X = c.GameObject.Pos.X + speed 
+	        }
+	    } 
+	}
+	c.Sprite.Update(float32(1.0 / 30.0))
+}
+
+func (c *Crab) GetArea() pi.IntArea {
+    return pi.IntArea{c.GameObject.Pos.X, c.GameObject.Pos.Y, 16, 16}
+}
+
+
+func CrabSystem (w *World) {
+    for _, crab := range w.Crabs {
+    	if Intersects(w.Player.GetArea(), crab.GetArea()) {
+    		w.Player.DecreaseHealth(15)
+    	}
+    }
+
+    for _, crab := range w.Crabs {
+       crab.Update(w)
+    }
+}
+
 

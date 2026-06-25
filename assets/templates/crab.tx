@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="Crab" type="Crab">
+  <properties>
+   <property name="sprite" value="crab_anim"/>
+  </properties>
+  <point/>
+ </object>
+</template>

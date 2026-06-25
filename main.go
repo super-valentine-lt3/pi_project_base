@@ -13,7 +13,7 @@ import (
 )
 
 //const mapPath = "assets/room_test_1.tmx" // Path to your Tiled Map.
-const mapPath = "assets/room_test_3.tmx" // Path to your Tiled Map.
+const mapPath = "assets/room_test_4.tmx" // Path to your Tiled Map.
 
 var gameMap *tiled.Map 
 var tileSet TileSet 
@@ -36,6 +36,7 @@ func NewObjectMap() ObjectMap {
        for _, object := range layer.Objects  {
          
          var name string 
+         fmt.Println(object.Template)
          if object.Type != "" {
             name = object.Type 
          } else if object.Template.Object.Type != "" {
@@ -200,6 +201,7 @@ type World struct {
    Door *Door 
    Gems []*Gem 
    Bats []*Bat 
+   Crabs []*Crab
    TileMap *TileMap 
 }
 
@@ -265,7 +267,12 @@ func main() {
       bats = append(bats, NewBat(bat))
    }
 
-   world := World{Player: Char, Bombs: bombs, Door: &door, Gems: gems, Bats: bats, TileMap: &tileMap}
+   crabs := make([]*Crab, 0)
+   for _, crab := range objectMap.Objects["Crab"] {
+      crabs = append(crabs, NewCrab(crab))
+   }
+
+   world := World{Player: Char, Bombs: bombs, Door: &door, Gems: gems, Bats: bats, Crabs: crabs, TileMap: &tileMap}
    
    //pausePanelRoot = pigui.New()
    // add a panel (container) at global coordinates
@@ -284,6 +291,7 @@ func main() {
          for _, bat := range world.Bats {
             bat.Update(&world)
          }
+         CrabSystem(&world)
          Char.Update(&world) 
       } else {
          pausePanelRoot.Update()
@@ -324,6 +332,9 @@ func main() {
       }
       for _, bat := range world.Bats {
          bat.Draw()
+      }
+         for _, crab := range world.Crabs {
+         crab.Draw()
       }
 
       Char.Draw() 
