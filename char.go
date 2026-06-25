@@ -36,6 +36,9 @@ const CharacterSpriteFile = "character_try_16x16_indexed.json"
 const CharacterSpriteDirectory = "./assets"
 const CharacterSpriteStartAnim = "idle_down "
 
+var CharColors []int = []int{0, 2, 3, 31, 10, 21}
+var DamageFlashTime = 6
+
 type Character struct {
     Sprite *SpriteAnim 
     Actions map[string]pikey.Key 
@@ -46,6 +49,8 @@ type Character struct {
     Health int 
     DamageCooldown int 
     DamageCooldownActive bool 
+    DamageFlash bool 
+    DamageFlashTimer int 
 }
 func (c *Character) AddPoints(points int) {
     c.Points += points 
@@ -55,6 +60,7 @@ func (c *Character) DecreaseHealth(damage int) {
     if c.DamageCooldownActive == false {
         c.Health -= damage 
         c.DamageCooldownActive = true 
+        c.DamageFlash = true 
     }
 }
 
@@ -138,11 +144,30 @@ func NewCharacter(obj GameObject,
     character.CurrentDirection = Down 
     character.Health = 100 
     character.DamageCooldown = 25 // frames 
+    character.DamageFlashTimer = DamageFlashTime
     return character
 }
 
+func Between(Value, Start, End int) bool {
+    return Value >= Start && Value <= End 
+}
+
 func (c *Character) Draw() {
-    c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
+    if c.DamageFlash {
+        var colorToUse int 
+        if Between(c.DamageFlashTimer, 1, 3) {
+            colorToUse = 2
+        } else {
+            colorToUse = 7     
+        }
+        for _, color := range CharColors {
+            pi.RemapColor(pi.Color(color), pi.Color(colorToUse))
+        }
+        c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
+        ResetPalette()
+    } else {
+        c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
+    } 
 }
 
 func (c *Character) Update(w *World) {//Map *CollisionMap) {
@@ -207,6 +232,13 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
         if c.DamageCooldown <= 0 {
             c.DamageCooldownActive = false 
             c.DamageCooldown = 25 
+        }
+    }
+    if c.DamageFlash {
+        c.DamageFlashTimer -= 1 
+        if c.DamageFlashTimer <= 0 {
+            c.DamageFlash = false 
+            c.DamageFlashTimer = DamageFlashTime
         }
     }
     c.Sprite.Update(float32(1.0 / 60.0))
