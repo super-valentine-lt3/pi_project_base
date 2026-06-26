@@ -36,14 +36,12 @@ func NewObjectMap() ObjectMap {
        for _, object := range layer.Objects  {
          
          var name string 
-         fmt.Println(object.Template)
          if object.Type != "" {
             name = object.Type 
          } else if object.Template.Object.Type != "" {
             name = object.Template.Object.Type
          } else {
             name =  object.Template.Object.Properties.GetString("sprite")
-            fmt.Println(name)
          }
          position := pi.Position{X: int(object.X), Y: int(object.Y)- gameMap.TileHeight}
          gameObj := GameObject{object, position}
@@ -113,7 +111,7 @@ func NewTileMap() TileMap {
            //if tt.Properties.GetBool("solid") {
                x := pos % gameMap.Width
                y := pos / gameMap.Width
-               fmt.Printf("X: %d Y: %d\n", x, y)
+               //fmt.Printf("X: %d Y: %d\n", x, y)
 
 
                hasSide := len(tt.Properties.Get("side")) > 0 

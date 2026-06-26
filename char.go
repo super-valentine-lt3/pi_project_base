@@ -26,6 +26,11 @@ const (
     Down 
     Left 
     Right 
+    
+    UpRight 
+    DownRight
+    UpLeft 
+    DownLeft 
 )
 
 var CurrentDirection = Down 

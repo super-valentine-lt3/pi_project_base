@@ -239,6 +239,7 @@ type Crab struct {
 	Sprite *SpriteAnim 
 	GameObject GameObject 
 	Dir Direction 
+	Dir2 Direction 
 	Timer float64 
 	InitTime float64 
 	MoveAnimSpeed float32
@@ -264,12 +265,68 @@ func (c *Crab) Draw() {
     c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
 }
 
+func (c *Crab) Move(w *World, dir Direction) {
+	 if dir == Up {  
+       tempY :=  c.GameObject.Pos.Y - speed 
+       tempX := c.GameObject.Pos.X 
+        if CanMove(w, tempX, tempY) {
+            c.GameObject.Pos.Y = c.GameObject.Pos.Y - speed 
+        }
+    } else if dir == Down {
+        tempY :=  c.GameObject.Pos.Y + speed 
+        tempX := c.GameObject.Pos.X 
+        if CanMove(w, tempX, tempY)  {
+            c.GameObject.Pos.Y = c.GameObject.Pos.Y + speed 
+        }
+    } else if dir == Left {
+        tempX := c.GameObject.Pos.X - speed 
+        tempY := c.GameObject.Pos.Y 
+        if CanMove(w, tempX, tempY)  {
+            c.GameObject.Pos.X = c.GameObject.Pos.X - speed 
+        }
+    } else if dir == Right {
+        tempX := c.GameObject.Pos.X + speed 
+        tempY := c.GameObject.Pos.Y 
+        if CanMove(w, tempX, tempY)  {
+            c.GameObject.Pos.X = c.GameObject.Pos.X + speed 
+        }
+    } else if dir == UpRight {
+       tempY :=  c.GameObject.Pos.Y - speed 
+       tempX := c.GameObject.Pos.X + speed 
+	   if CanMove(w, tempX, tempY)  {
+	   		c.GameObject.Pos.X = tempX 
+			c.GameObject.Pos.Y = tempY 
+	   }
+    } else if dir == UpLeft {
+       tempY :=  c.GameObject.Pos.Y - speed 
+       tempX := c.GameObject.Pos.X - speed 
+	   if CanMove(w, tempX, tempY)  {
+	   		c.GameObject.Pos.X = tempX 
+			c.GameObject.Pos.Y = tempY 
+	   }
+    } else if dir == DownRight {
+       tempY :=  c.GameObject.Pos.Y + speed 
+       tempX := c.GameObject.Pos.X + speed 
+	   if CanMove(w, tempX, tempY)  {
+	   		c.GameObject.Pos.X = tempX 
+			c.GameObject.Pos.Y = tempY 
+	   }
+    } else if dir == DownLeft {
+       tempY :=  c.GameObject.Pos.Y + speed 
+       tempX := c.GameObject.Pos.X - speed 
+	   if CanMove(w, tempX, tempY)  {
+	   		c.GameObject.Pos.X = tempX 
+			c.GameObject.Pos.Y = tempY 
+	   }
+    }
+}
+
 func (c *Crab) Update(w *World) {
 	if pi.Time - c.InitTime >= c.Timer {
 		if c.Idle {
 			c.Sprite.Play("move")
 			c.Sprite.SetSpeed(c.MoveAnimSpeed)
-			c.Dir = Direction(Random(0, 3))
+			c.Dir = Direction(Random(0, 7))
 			c.InitTime = pi.Time 
 			c.Idle = false 
 		} else {
@@ -279,31 +336,32 @@ func (c *Crab) Update(w *World) {
 			c.Idle = true 
 		}
 	} else if !c.Idle {
-		 if c.Dir == Up {  
-	       tempY :=  c.GameObject.Pos.Y - speed 
-	       tempX := c.GameObject.Pos.X 
-	        if CanMove(w, tempX, tempY) {
-	            c.GameObject.Pos.Y = c.GameObject.Pos.Y - speed 
-	        }
-	    } else if c.Dir == Down {
-	        tempY :=  c.GameObject.Pos.Y + speed 
-	        tempX := c.GameObject.Pos.X 
-	        if CanMove(w, tempX, tempY)  {
-	            c.GameObject.Pos.Y = c.GameObject.Pos.Y + speed 
-	        }
-	    } else if c.Dir == Left {
-	        tempX := c.GameObject.Pos.X - speed 
-	        tempY := c.GameObject.Pos.Y 
-	        if CanMove(w, tempX, tempY)  {
-	            c.GameObject.Pos.X = c.GameObject.Pos.X - speed 
-	        }
-	    } else if c.Dir == Right {
-	        tempX := c.GameObject.Pos.X + speed 
-	        tempY := c.GameObject.Pos.Y 
-	        if CanMove(w, tempX, tempY)  {
-	            c.GameObject.Pos.X = c.GameObject.Pos.X + speed 
-	        }
-	    } 
+		c.Move(w, c.Dir)
+		//  if c.Dir == Up {  
+	    //    tempY :=  c.GameObject.Pos.Y - speed 
+	    //    tempX := c.GameObject.Pos.X 
+	    //     if CanMove(w, tempX, tempY) {
+	    //         c.GameObject.Pos.Y = c.GameObject.Pos.Y - speed 
+	    //     }
+	    // } else if c.Dir == Down {
+	    //     tempY :=  c.GameObject.Pos.Y + speed 
+	    //     tempX := c.GameObject.Pos.X 
+	    //     if CanMove(w, tempX, tempY)  {
+	    //         c.GameObject.Pos.Y = c.GameObject.Pos.Y + speed 
+	    //     }
+	    // } else if c.Dir == Left {
+	    //     tempX := c.GameObject.Pos.X - speed 
+	    //     tempY := c.GameObject.Pos.Y 
+	    //     if CanMove(w, tempX, tempY)  {
+	    //         c.GameObject.Pos.X = c.GameObject.Pos.X - speed 
+	    //     }
+	    // } else if c.Dir == Right {
+	    //     tempX := c.GameObject.Pos.X + speed 
+	    //     tempY := c.GameObject.Pos.Y 
+	    //     if CanMove(w, tempX, tempY)  {
+	    //         c.GameObject.Pos.X = c.GameObject.Pos.X + speed 
+	    //     }
+	    // } 
 	}
 	c.Sprite.Update(float32(1.0 / 30.0))
 }
