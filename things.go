@@ -248,7 +248,7 @@ func (b *Bat) Update(w *World) {
 	b.Sprite.Update(float32(1.0 / 60.0))
 }
 
-// --- spider
+// --- crab
 //go:embed "assets/crab_try.png"
 var crabSpritesPNG []byte
 const CrabSpriteFile = "crab_try.json"
@@ -266,6 +266,10 @@ type Crab struct {
 	IdleAnimSpeed float32 
 	Idle bool 
 	Dead bool 
+	Health int 
+    DamageFlash bool 
+    DamageFlashTimer int 
+
 }
 
 func NewCrab(obj GameObject) *Crab{
@@ -279,11 +283,38 @@ func NewCrab(obj GameObject) *Crab{
     crab.MoveAnimSpeed = .75 
     crab.IdleAnimSpeed = -1.0 
     crab.Idle = true 
+    crab.Health = 20
+    crab.DamageFlashTimer = DamageFlashTime
     return crab
 }
 
+func (c *Crab) DecreaseHealth(value int ) {
+	c.Health -= value 
+	if c.Health <= 0 {
+		c.Dead = true 
+	}
+	c.DamageFlash = true 
+}
+var CrabColors []int = []int{0, 2, 19}
+
 func (c *Crab) Draw() {
-    c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
+
+    if c.DamageFlash {
+        var colorToUse int 
+        if Between(c.DamageFlashTimer, 1, 3) {
+            colorToUse = 2
+        } else {
+            colorToUse = 7     
+        }
+        for _, color := range CrabColors {
+            pi.RemapColor(pi.Color(color), pi.Color(colorToUse))
+        }
+        c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
+        ResetPalette()
+    } else {
+
+	    c.Sprite.Draw(c.GameObject.Pos.X, c.GameObject.Pos.Y)    
+	}
 }
 
 func (c *Crab) Move(w *World, dir Direction) {
@@ -384,6 +415,14 @@ func (c *Crab) Update(w *World) {
 	    //     }
 	    // } 
 	}
+	if c.DamageFlash {
+        c.DamageFlashTimer -= 1 
+        if c.DamageFlashTimer <= 0 {
+            c.DamageFlash = false 
+            c.DamageFlashTimer = DamageFlashTime
+        }
+    }
+
 	c.Sprite.Update(float32(1.0 / 30.0))
 }
 
@@ -407,4 +446,111 @@ func CrabSystem (w *World) {
     }
 }
 
+// projectile 
+type Projectile struct{
+	X int 
+	Y int 
+	Dir Direction 
+	Speed int
+	Color pi.Color
+	Radius int 
+	Dead bool 
+}
+func NewProjectile(
+		BaseX int, 
+		BaseY int, 
+		Dir Direction, 
+		Speed int, color pi.Color) *Projectile{
+	proj := &Projectile{
+		X: BaseX, 
+		Y: BaseY,
+		Speed: Speed,  
+	}
+	proj.Color = color 
 
+	switch Dir {
+    case Up:
+       proj.Y = proj.Y - 10 
+       proj.X = proj.X + 8 
+
+    case Down:
+       proj.Y = proj.Y + 10 
+       proj.X = proj.X + 8 
+
+    case Left:
+       proj.X = proj.X - 10 
+       proj.Y = proj.Y + 8 
+
+    case Right:
+       proj.X = proj.X + 10   
+       proj.Y = proj.Y + 8     
+    default:
+       //proj.Y = proj.Y + 10 
+    }
+    proj.Dir = Dir 
+    proj.Radius = 2 
+    return proj 
+}
+
+
+
+func (g *Projectile) Update()  { 
+	switch g.Dir {
+    case Up:
+       g.Y = g.Y - g.Speed 
+    case Down:
+       g.Y = g.Y + g.Speed 
+    case Left:
+       g.X = g.X - g.Speed 
+    case Right:
+       g.X = g.X + g.Speed       
+    default:
+       g.Y = g.Y + g.Speed 
+    }
+
+}
+
+func (g *Projectile) Draw() {
+	
+	before := pi.SetColor(0)
+	pi.CircFill(g.X, g.Y, g.Radius )
+	pi.SetColor(g.Color)
+	pi.CircFill(g.X, g.Y, g.Radius - 1)
+	pi.SetColor(before)
+}
+
+func (g *Projectile) NextMove() (int, int) {
+	var tempX, tempY int = g.X, g.Y
+
+	switch g.Dir {
+    case Up:
+       tempY = g.Y - g.Speed 
+    case Down:
+       tempY = g.Y + g.Speed 
+    case Left:
+       tempX = g.X - g.Speed 
+    case Right:
+       tempX = g.X + g.Speed       
+    default:
+    }
+
+    return tempX, tempY 
+}
+
+func ProjectileSystem (w *World) {
+    w.Projectiles = slices.DeleteFunc(w.Projectiles, func(p *Projectile) bool {
+    	tempX, tempY := p.NextMove() 
+        return !CanMove(w, tempX, tempY) || p.Dead 
+    })
+
+
+    for _, proj := range w.Projectiles {
+       proj.Update()
+    	for _, crab := range w.Crabs {
+    		if CircleIntersectsRect(crab.GetArea(), proj.X, proj.Y, proj.Radius)  {
+	    		crab.DecreaseHealth(5)
+	    		proj.Dead = true 
+    		}    	
+    	}       
+    }
+}

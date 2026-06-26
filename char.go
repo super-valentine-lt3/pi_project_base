@@ -6,7 +6,7 @@ import (
     "github.com/solarlune/goaseprite"
     "os"
     _ "embed"
-    //"fmt"
+    // "fmt"
     "github.com/elgopher/pi/pievent"
 
 )
@@ -60,6 +60,7 @@ type Character struct {
     DamageFlashTimer int 
     BombCount int 
     DroppingBomb bool 
+    ShootingProjectile bool 
 }
 
 func (c *Character) PickUpBomb() {
@@ -161,8 +162,18 @@ func NewCharacter(obj GameObject,
     character.DamageFlashTimer = DamageFlashTime
     character.BombCount = 3 
 
-   pikey.Target().Subscribe(pikey.Event{pikey.EventDown, pikey.Space}, func(e pikey.Event, h pievent.Handler){
-        character.DroppingBomb = true 
+   // pikey.Target().Subscribe(pikey.Event{pikey.EventDown, pikey.Space}, func(e pikey.Event, h pievent.Handler){
+   //      character.DroppingBomb = true 
+   // })
+   pikey.Target().SubscribeAll(func(e pikey.Event, h pievent.Handler){
+        if e.Type == pikey.EventDown  {
+            if e.Key == pikey.CtrlLeft || e.Key == pikey.CtrlRight {
+                character.DroppingBomb = true 
+            }
+            if e.Key == pikey.Space {
+                character.ShootingProjectile = true 
+            }
+        }
    })
 
     return character
@@ -263,6 +274,11 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
         w.Bombs = append(w.Bombs, bomb)
         c.BombCount -= 1 
         c.DroppingBomb = false 
+    }
+    
+    if c.ShootingProjectile {
+        w.Projectiles = append(w.Projectiles, NewProjectile(c.GameObject.Pos.X, c.GameObject.Pos.Y, c.CurrentDirection, 2, pi.Color(13)))
+        c.ShootingProjectile = false 
     }
 
     if c.DamageCooldownActive {

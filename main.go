@@ -200,7 +200,17 @@ type World struct {
    Gems []*Gem 
    Bats []*Bat 
    Crabs []*Crab
+   Projectiles []*Projectile
    TileMap *TileMap 
+}
+func CircleIntersectsRect(rect pi.IntArea,  circX, circY, circRadius int) bool {
+    closestX := max(rect.X, min(circX, rect.X + rect.W));
+    closestY := max(rect.Y, min(circY, rect.Y + rect.H));
+
+    dx := circX - closestX;
+    dy := circY - closestY;
+
+    return dx * dx + dy * dy <= circRadius * circRadius;
 }
 
 func Intersects(a, b pi.IntArea) bool {
@@ -246,7 +256,7 @@ func main() {
    Char.SetAction("move_right", pikey.Right)
    Char.SetAction("move_down", pikey.Down)
    Char.SetAction("interact", pikey.Space)   
-   Char.SetAction("drop_bomb", pikey.Space)   
+   //Char.SetAction("drop_bomb", pikey.CtrlLeft)   
 
    bombs := make([]*Bomb, 0)
    for _, bomb := range objectMap.Objects["Bomb"] {
@@ -291,6 +301,7 @@ func main() {
             bat.Update(&world)
          }
          CrabSystem(&world)
+         ProjectileSystem(&world)
          Char.Update(&world) 
       } else {
          pausePanelRoot.Update()
@@ -332,8 +343,12 @@ func main() {
       for _, bat := range world.Bats {
          bat.Draw()
       }
-         for _, crab := range world.Crabs {
+      for _, crab := range world.Crabs {
          crab.Draw()
+      }
+      
+      for _, proj := range world.Projectiles {
+         proj.Draw()
       }
 
       Char.Draw() 
