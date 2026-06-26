@@ -7,6 +7,8 @@ import (
     "os"
     _ "embed"
     //"fmt"
+    "github.com/elgopher/pi/pievent"
+
 )
 
 func IsKeyPressedDuration(key pikey.Key, duration int) bool {
@@ -56,7 +58,14 @@ type Character struct {
     DamageCooldownActive bool 
     DamageFlash bool 
     DamageFlashTimer int 
+    BombCount int 
+    DroppingBomb bool 
 }
+
+func (c *Character) PickUpBomb() {
+    c.BombCount += 1 
+}
+
 func (c *Character) AddPoints(points int) {
     c.Points += points 
 }
@@ -150,6 +159,12 @@ func NewCharacter(obj GameObject,
     character.Health = 100 
     character.DamageCooldown = 25 // frames 
     character.DamageFlashTimer = DamageFlashTime
+    character.BombCount = 3 
+
+   pikey.Target().Subscribe(pikey.Event{pikey.EventDown, pikey.Space}, func(e pikey.Event, h pievent.Handler){
+        character.DroppingBomb = true 
+   })
+
     return character
 }
 
@@ -230,6 +245,24 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
         default:
            c.Sprite.Play("idle_down")
         }
+    }
+
+    if c.DroppingBomb && c.BombCount > 0 { //IsKeyPressed(c.Actions["drop_bomb"]) && c.BombCount > 0 {
+        var bombX, bombY int  = c.GameObject.Pos.X, c.GameObject.Pos.Y 
+        switch c.CurrentDirection {
+        case Up: 
+            bombY -= 16 
+        case Down: 
+            bombY += 16
+        case Left: 
+            bombX -= 16
+        case Right: 
+            bombX += 16
+        }
+        bomb := NewBombInGame(bombX, bombY) 
+        w.Bombs = append(w.Bombs, bomb)
+        c.BombCount -= 1 
+        c.DroppingBomb = false 
     }
 
     if c.DamageCooldownActive {

@@ -6,7 +6,7 @@ import (
    "github.com/elgopher/pi/piebiten" // import backend
     "github.com/lafriks/go-tiled"
     _ "embed"
-    "fmt"
+   // "fmt"
    "github.com/elgopher/pi/pikey"
      // "github.com/elgopher/pi/pigui"
 
@@ -246,6 +246,7 @@ func main() {
    Char.SetAction("move_right", pikey.Right)
    Char.SetAction("move_down", pikey.Down)
    Char.SetAction("interact", pikey.Space)   
+   Char.SetAction("drop_bomb", pikey.Space)   
 
    bombs := make([]*Bomb, 0)
    for _, bomb := range objectMap.Objects["Bomb"] {

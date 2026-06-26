@@ -28,6 +28,12 @@ type Bomb struct {
 	GameObject GameObject 
 	Detonated bool  
 	Dead bool 
+	PickedUp bool 
+}
+
+func NewBombInGame(PosX, PosY int) *Bomb {
+	obj := GameObject{nil, pi.Position{PosX, PosY}}
+	return NewBomb(obj, BombSpriteFile, BombSpriteDirectory, BombSpriteStartAnim)
 }
 
 func NewBomb(obj GameObject, 
@@ -60,7 +66,8 @@ func (b *Bomb) Update(w *World) {
 }
 
 func (b *Bomb) GetArea() pi.IntArea {
-    return pi.IntArea{b.GameObject.Pos.X, b.GameObject.Pos.Y, 16, 16}
+	// //  16, 16 -> 14, 14 to make bomb dropping not hurt player 
+    return pi.IntArea{b.GameObject.Pos.X, b.GameObject.Pos.Y, 14, 14} 
 }
 
 // Use a bomb system to check and remove bombs if they're touched
@@ -72,15 +79,28 @@ func BombSystem (w *World) {
     // })
 
     w.Bombs = slices.DeleteFunc(w.Bombs, func(b *Bomb) bool {
-        return b.Dead
+        return b.Dead || b.PickedUp
     })
 
     for _, bomb := range w.Bombs {
+    	// Bombs used to hurt player, now it adds to inventory 
+    	// if Intersects(w.Player.GetArea(), bomb.GetArea()) && !bomb.Detonated {
+    	// 	bomb.Detonated = true 
+    	// 	bomb.Sprite.Play("explode")
+    	// 	w.Player.DecreaseHealth(10)
+    	// 	//fmt.Println("i'm here ")
+    	// }
     	if Intersects(w.Player.GetArea(), bomb.GetArea()) && !bomb.Detonated {
-    		bomb.Detonated = true 
-    		bomb.Sprite.Play("explode")
-    		w.Player.DecreaseHealth(10)
-    		//fmt.Println("i'm here ")
+    		bomb.PickedUp = true 
+    		w.Player.PickUpBomb()
+    	}
+
+    	for _, crab := range w.Crabs {
+    		if Intersects(crab.GetArea(), bomb.GetArea()) && !bomb.Detonated {
+	    		bomb.Detonated = true 
+	    		bomb.Sprite.Play("explode")
+	    		crab.Dead = true 
+    		}    	
     	}
     }
 
@@ -245,6 +265,7 @@ type Crab struct {
 	MoveAnimSpeed float32
 	IdleAnimSpeed float32 
 	Idle bool 
+	Dead bool 
 }
 
 func NewCrab(obj GameObject) *Crab{
@@ -377,6 +398,9 @@ func CrabSystem (w *World) {
     		w.Player.DecreaseHealth(15)
     	}
     }
+    w.Crabs = slices.DeleteFunc(w.Crabs, func(c *Crab) bool {
+        return c.Dead
+    })
 
     for _, crab := range w.Crabs {
        crab.Update(w)

@@ -38,7 +38,8 @@ func PauseSystem()  {
 }
 
 func UISystem(w *World) {
-      picofont.Print(fmt.Sprintf("POINTS: %d  HEALTH: %d", w.Player.Points, w.Player.Health), 85, 2)
+      picofont.Print(fmt.Sprintf("POINTS: %d  HEALTH: %d BOMBS: %d", w.Player.Points, w.Player.Health, w.Player.BombCount),
+                                  70, 2)
 }
 
 func attachPanel(parent *pigui.Element, x, y, w, h int) *pigui.Element {
