@@ -13,7 +13,7 @@ import (
 )
 
 //const mapPath = "assets/room_test_1.tmx" // Path to your Tiled Map.
-const mapPath = "assets/room_test_4.tmx" // Path to your Tiled Map.
+const mapPath = "assets/room_test_new_tiles_1.tmx" // Path to your Tiled Map.
 
 var gameMap *tiled.Map 
 var tileSet TileSet 
@@ -263,8 +263,10 @@ func main() {
       bombs = append(bombs, NewBomb(bomb, BombSpriteFile, BombSpriteDirectory, BombSpriteStartAnim))
    }
    
-   doorObj := objectMap.Objects["tile_door_1"][0]
-   door := NewDoor(doorObj, tileSet.Tiles["tile_door_1"], true)
+
+   //doorObj := objectMap.Objects["tile_door_1"][0]
+   //var door Door 
+   //door := NewDoor(doorObj, tileSet.Tiles["tile_door_1"], true)
 
    gems := make([]*Gem, 0)
    for _, gem := range objectMap.Objects["Gem"] {
@@ -281,7 +283,7 @@ func main() {
       crabs = append(crabs, NewCrab(crab))
    }
 
-   world := World{Player: Char, Bombs: bombs, Door: &door, Gems: gems, Bats: bats, Crabs: crabs, TileMap: &tileMap}
+   world := World{Player: Char, Bombs: bombs, Door: nil, Gems: gems, Bats: bats, Crabs: crabs, TileMap: &tileMap}
    
    //pausePanelRoot = pigui.New()
    // add a panel (container) at global coordinates
@@ -295,7 +297,7 @@ func main() {
       PauseSystem()
       if !Paused {
          BombSystem(&world)
-         DoorSystem(&world)
+         //DoorSystem(&world)
          GemSystem(&world)
          for _, bat := range world.Bats {
             bat.Update(&world)
@@ -332,7 +334,7 @@ func main() {
       //    }
       // }
 
-      world.Door.Draw() 
+     // world.Door.Draw() 
 
       for _, bomb := range world.Bombs {
          bomb.Draw()

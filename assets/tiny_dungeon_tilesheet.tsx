@@ -78,4 +78,43 @@
    <property name="solid_offset_y" type="int" value="8"/>
   </properties>
  </tile>
+ <tile id="35" type="tile_stone_wall_side_1">
+  <properties>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="36" type="tile_stone_wall_side_2">
+  <properties>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="37" type="tile_wall_side_7"/>
+ <tile id="38" type="tile_wall_side_8"/>
+ <tile id="39" type="tile_wall_side_9"/>
+ <tile id="40" type="tile_wall_side_10"/>
+ <tile id="41" type="tile_wall_side_11"/>
+ <tile id="42" type="tile_wall_side_12"/>
+ <tile id="48" type="tile_stone_wall_side_6">
+  <properties>
+   <property name="side" value="down"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="49" type="tile_stone_wall_side_7"/>
+ <tile id="50" type="tile_stone_wall_side_8"/>
+ <tile id="51" type="tile_stone_wall_side_3">
+  <properties>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="52" type="tile_stone_wall_side_4">
+  <properties>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="53" type="tile_stone_wall_side_5">
+  <properties>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
 </tileset>

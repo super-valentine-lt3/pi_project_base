@@ -4,6 +4,25 @@
         "."
     ],
     "fileStates": {
+        "room_test_4.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 3,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 149.16666666666666,
+                "y": 76.83333333333331
+            }
+        },
+        "room_test_new_tiles_1.tmx": {
+            "scale": 4,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 83.625,
+                "y": 45.875
+            }
+        }
     },
     "last.imagePath": "C:/Users/luna-/Documents/GameDevelopment/Go/pi_project/assets",
     "last.objectTemplatePath": "C:/Users/luna-/Documents/GameDevelopment/Go/pi_project_base/assets/templates",
