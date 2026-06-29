@@ -5,9 +5,6 @@
     ],
     "fileStates": {
         "room_test_4.tmx": {
-            "expandedObjectLayers": [
-                2
-            ],
             "scale": 3,
             "selectedLayer": 1,
             "viewCenter": {
@@ -16,6 +13,9 @@
             }
         },
         "room_test_new_tiles_1.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
             "scale": 4,
             "selectedLayer": 2,
             "viewCenter": {

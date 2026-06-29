@@ -8,6 +8,7 @@ import (
      "log"
      _ "embed"
     "math/rand/v2"
+    "math"
 ) 
 
 // Inclusive 
@@ -230,6 +231,27 @@ const BatSpriteStartAnim = "normal"
 type Bat struct {
 	Sprite *SpriteAnim 
 	GameObject GameObject 
+	HoverSpeed float64
+	HoverHeight float64 
+	HoverTimer float64
+	BaseY int
+
+	Dead bool 
+	Health int 
+    DamageFlash bool 
+    DamageFlashTimer int 
+
+}
+func (b *Bat) DecreaseHealth(value int ) {
+	b.Health -= value 
+	if b.Health <= 0 {
+		b.Dead = true 
+	}
+	b.DamageFlash = true 
+}
+
+func (b *Bat) GetArea() pi.IntArea {
+    return pi.IntArea{b.GameObject.Pos.X, b.GameObject.Pos.Y, 16, 16}
 }
 
 func NewBat(obj GameObject) *Bat{
@@ -237,16 +259,63 @@ func NewBat(obj GameObject) *Bat{
     spriteAnim := NewSpriteAnim(batSpritesPNG, BatSpriteFile, BatSpriteDirectory, BatSpriteStartAnim, 16, 16, 4.0)
     bat.Sprite = spriteAnim
     bat.GameObject = obj
+    bat.HoverSpeed = 2.0 
+    bat.HoverHeight = 4.0
+    bat.BaseY = obj.Pos.Y 
+    bat.Health = 30
+    bat.DamageFlashTimer = DamageFlashTime    
     return bat
 }
+var BatColors []int = []int{9, 10, 17}
 
 func (b *Bat) Draw() {
-    b.Sprite.Draw(b.GameObject.Pos.X, b.GameObject.Pos.Y)    
+    if b.DamageFlash {
+        var colorToUse int 
+        if Between(b.DamageFlashTimer, 1, 3) {
+            colorToUse = 2
+        } else {
+            colorToUse = 7     
+        }
+        for _, color := range BatColors {
+            pi.RemapColor(pi.Color(color), pi.Color(colorToUse))
+        }
+        b.Sprite.Draw(b.GameObject.Pos.X, b.GameObject.Pos.Y)    
+        ResetPalette()
+    } else {
+   		b.Sprite.Draw(b.GameObject.Pos.X, b.GameObject.Pos.Y)    
+	}
 }
 
 func (b *Bat) Update(w *World) {
+	b.HoverTimer += 1.0 / 30.0 
+	b.GameObject.Pos.Y = int(float64(b.BaseY) + math.Sin(b.HoverTimer * b.HoverSpeed) * b.HoverHeight);
+
+	if b.DamageFlash {
+        b.DamageFlashTimer -= 1 
+        if b.DamageFlashTimer <= 0 {
+            b.DamageFlash = false 
+            b.DamageFlashTimer = DamageFlashTime
+        }
+    }
+
 	b.Sprite.Update(float32(1.0 / 60.0))
 }
+
+func BatSystem (w *World) {
+    for _, bat := range w.Bats {
+    	if Intersects(w.Player.GetArea(), bat.GetArea()) {
+    		w.Player.DecreaseHealth(10)
+    	}
+    }
+    w.Bats = slices.DeleteFunc(w.Bats, func(b *Bat) bool {
+        return b.Dead
+    })
+
+    for _, bat := range w.Bats {
+       bat.Update(w)
+    }
+}
+
 
 // --- crab
 //go:embed "assets/crab_try.png"
@@ -551,6 +620,12 @@ func ProjectileSystem (w *World) {
 	    		crab.DecreaseHealth(5)
 	    		proj.Dead = true 
     		}    	
-    	}       
+    	}    
+    	for _, bat := range w.Bats {
+    		if CircleIntersectsRect(bat.GetArea(), proj.X, proj.Y, proj.Radius)  {
+	    		bat.DecreaseHealth(5)
+	    		proj.Dead = true 
+    		}    	
+    	}       	   
     }
 }
