@@ -238,25 +238,45 @@ func IntersectsTouch(a, b pi.IntArea) bool {
         (a.Y <= b.Y + b.H) && (a.Y + a.H >= b.Y))
 }
 
+var MainSprites pi.Canvas 
+
+func SetScreen(s Screen, firstScreen bool) {
+   pi.Update = s.Update
+   pi.Draw = s.Draw
+   pi.Init = s.Init
+   if !firstScreen {
+      s.Init() 
+   } 
+}
+
 func main() {
-   
+   pi.SetScreenSize(256, 144) 
+   pi.SetTransparency(0, false)
+   pi.SetTransparency(32, true)
+
+   SetScreen(&TitleScreen{}, true)
+   piebiten.Run()
+}
+
+func main2() {
+   // 64 x 32 logo 
+   // at 192, 0
    pi.Palette = pi.DecodePalette(spritesPNG)
    pi.SetTransparency(0, false)
    pi.SetTransparency(32, true)
-   sprites := pi.DecodeCanvas(spritesPNG)
+   //sprites := pi.DecodeCanvas(spritesPNG)
 
    // getting the tiles 
-   tileList := gameMap.Tilesets[0].Tiles
-   for _, tile := range tileList {
-      r  := gameMap.Tilesets[0].GetTileRect(tile.ID)
-      x, y, width, height := r.Min.X, r.Min.Y, r.Dx(), r.Dy()
-      tileSet.Tiles[tile.Type] = pi.SpriteFrom(sprites, x, y, width, height)
-   }
-   //fmt.Println(tileSet.Tiles)
+   // tileList := gameMap.Tilesets[0].Tiles
+   // for _, tile := range tileList {
+   //    r  := gameMap.Tilesets[0].GetTileRect(tile.ID)
+   //    x, y, width, height := r.Min.X, r.Min.Y, r.Dx(), r.Dy()
+   //    tileSet.Tiles[tile.Type] = pi.SpriteFrom(sprites, x, y, width, height)
+   // }
+
    tileMap := NewTileMap()
    objectMap := NewObjectMap()
 
-   //fmt.Println(objectMap.Objects)
    pi.SetScreenSize(256, 144) // set custom screen size
 
    player := objectMap.Objects["Player"][0]
@@ -369,6 +389,9 @@ func main() {
       if Paused {
          pausePanelRoot.Draw()
       }
+
+     // pi.DrawSprite(logo, 0, 0)
+
    }
    piebiten.Run() // run backend
 }

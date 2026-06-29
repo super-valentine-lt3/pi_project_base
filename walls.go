@@ -3,7 +3,7 @@ package main
 import (
     "github.com/elgopher/pi"
     //"github.com/lafriks/go-tiled"
-   "fmt"
+  // "fmt"
 )
 
 func (s Direction) String() string {
