@@ -27,7 +27,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="2" name="Object Layer 1" visible="0">
+ <objectgroup id="2" name="Object Layer 1">
   <object id="19" template="templates/Player.tx" type="Player" x="128" y="112"/>
   <object id="21" template="templates/door.tx" x="112" y="32"/>
   <object id="23" template="templates/gem.tx" x="80" y="64">

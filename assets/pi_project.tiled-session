@@ -4,6 +4,14 @@
         "."
     ],
     "fileStates": {
+        "room_test_3.tmx": {
+            "scale": 2.38984375,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 127.83262504086305,
+                "y": 72.18045112781957
+            }
+        },
         "room_test_4.tmx": {
             "scale": 3,
             "selectedLayer": 1,

@@ -61,6 +61,7 @@ type Character struct {
     BombCount int 
     DroppingBomb bool 
     ShootingProjectile bool 
+    TouchingDoor bool 
 }
 
 func (c *Character) PickUpBomb() {
@@ -170,7 +171,7 @@ func NewCharacter(obj GameObject,
             if e.Key == pikey.CtrlLeft || e.Key == pikey.CtrlRight {
                 character.DroppingBomb = true 
             }
-            if e.Key == pikey.Space {
+            if e.Key == pikey.Space && !character.TouchingDoor{
                 character.ShootingProjectile = true 
             }
         }

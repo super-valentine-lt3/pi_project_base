@@ -136,9 +136,19 @@ func (d *Door) GetArea() pi.IntArea {
 
 
 func DoorSystem(world *World) {
-	if IntersectsTouch(world.Door.GetArea(), world.Player.GetArea()) && 
-		IsKeyPressed(world.Player.Actions["interact"]) {
-		fmt.Println("Trying to enter")
+	// if IntersectsTouch(world.Door.GetArea(), world.Player.GetArea()) && 
+	// 	IsKeyPressed(world.Player.Actions["interact"]) {
+	// 	world.Player.TouchingDoor = true 
+	// } else {
+	// 	world.Player.TouchingDoor = false 
+	// }
+	if IntersectsTouch(world.Door.GetArea(), world.Player.GetArea()) {
+		world.Player.TouchingDoor = true 
+		if IsKeyPressed(world.Player.Actions["interact"]) {
+			fmt.Println("trying to enter door")
+		}	
+	} else {
+		world.Player.TouchingDoor = false 
 	}
 }
 

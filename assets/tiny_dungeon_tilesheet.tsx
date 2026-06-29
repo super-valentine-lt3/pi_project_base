@@ -78,6 +78,8 @@
    <property name="solid_offset_y" type="int" value="8"/>
   </properties>
  </tile>
+ <tile id="32" type="tile_door_3"/>
+ <tile id="33" type="tile_door_2"/>
  <tile id="35" type="tile_stone_wall_side_1">
   <properties>
    <property name="solid" type="bool" value="true"/>
