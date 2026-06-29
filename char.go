@@ -10,7 +10,14 @@ import (
     "github.com/elgopher/pi/pievent"
 
 )
-
+func PlayerCollisionArea(x, y int) pi.IntArea {
+    return pi.IntArea{
+        X: x + 4,
+        Y: y + 10,
+        W: 8,
+        H: 6,
+    }
+}
 func IsKeyPressedDuration(key pikey.Key, duration int) bool {
     return pikey.Duration(key) > duration
 }

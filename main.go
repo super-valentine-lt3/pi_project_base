@@ -67,18 +67,24 @@ type Tile struct {
    Side *Direction 
 }
 
-func (t *Tile) GetArea() pi.IntArea {
+func (t *Tile) GetArea() (pi.IntArea, *pi.IntArea, *Direction) {
    if t.Side == nil {
-      return pi.IntArea{t.X, t.Y, 16, 16}
+      return pi.IntArea{t.X, t.Y, 16, 16}, nil, nil  
    } else {
       if *t.Side == Left {
-         return pi.IntArea{t.X, t.Y, 8, 16}
+         return pi.IntArea{t.X, t.Y, 8, 16}, nil, t.Side  
       } else if *t.Side == Right {
-         return pi.IntArea{t.X+8, t.Y, 8, 16}
+         return pi.IntArea{t.X+8, t.Y, 8, 16}, nil, t.Side  
       } else if *t.Side == Down {
-         return pi.IntArea{t.X, t.Y+8, 16, 8}
+         return pi.IntArea{t.X, t.Y+8, 16, 8}, nil, t.Side  
+      } else if *t.Side == DownLeft {
+         left := pi.IntArea{t.X, t.Y, 8, 16}
+         return pi.IntArea{t.X, t.Y+8, 16, 8}, &left, t.Side  
+      } else if *t.Side == DownRight {
+         right := pi.IntArea{t.X+8, t.Y, 8, 16}
+         return pi.IntArea{t.X, t.Y+8,8, 8}, &right, t.Side  
       } else {
-         return pi.IntArea{t.X, t.Y, 16, 16}
+         return pi.IntArea{t.X, t.Y, 16, 16}, nil, t.Side 
       }
    }
 }
@@ -132,6 +138,12 @@ func NewTileMap() TileMap {
                   } else if sideString == "down" {
                      side := Down 
                      Side = &side
+                  } else if sideString == "down_left" {
+                     side := DownLeft
+                     Side = &side 
+                  } else if sideString == "down_right" {
+                     side := DownRight
+                     Side = &side 
                   }
                }
                tileLayer[y][x] = Tile{tt.Type, tt.Properties.GetBool("solid"), x*gameMap.TileWidth, y*gameMap.TileHeight, Side} 

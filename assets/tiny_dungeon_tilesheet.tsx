@@ -90,20 +90,60 @@
    <property name="solid" type="bool" value="true"/>
   </properties>
  </tile>
- <tile id="37" type="tile_wall_side_7"/>
- <tile id="38" type="tile_wall_side_8"/>
- <tile id="39" type="tile_wall_side_9"/>
- <tile id="40" type="tile_wall_side_10"/>
- <tile id="41" type="tile_wall_side_11"/>
- <tile id="42" type="tile_wall_side_12"/>
+ <tile id="37" type="tile_wall_side_7">
+  <properties>
+   <property name="side" value="right"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="38" type="tile_wall_side_8">
+  <properties>
+   <property name="side" value="down"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="39" type="tile_wall_side_9">
+  <properties>
+   <property name="side" value="down"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="40" type="tile_wall_side_10">
+  <properties>
+   <property name="side" value="left"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="41" type="tile_wall_side_11">
+  <properties>
+   <property name="side" value="up"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="42" type="tile_wall_side_12">
+  <properties>
+   <property name="side" value="up"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="48" type="tile_stone_wall_side_6">
   <properties>
    <property name="side" value="down"/>
    <property name="solid" type="bool" value="true"/>
   </properties>
  </tile>
- <tile id="49" type="tile_stone_wall_side_7"/>
- <tile id="50" type="tile_stone_wall_side_8"/>
+ <tile id="49" type="tile_stone_wall_side_7">
+  <properties>
+   <property name="side" value="down_left"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="50" type="tile_stone_wall_side_8">
+  <properties>
+   <property name="side" value="down_right"/>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="51" type="tile_stone_wall_side_3">
   <properties>
    <property name="solid" type="bool" value="true"/>
