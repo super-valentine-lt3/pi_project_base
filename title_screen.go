@@ -26,6 +26,7 @@ type TitleScreen struct {
 
 func (ts *TitleScreen) StartGame(e pikey.Event, h pievent.Handler) {
 	pikey.Target().Unsubscribe(ts.EnterEventHandle)
+	SetScreen(&GameScreen{}, false)
 }
 
 func (ts *TitleScreen) Init() {

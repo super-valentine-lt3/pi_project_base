@@ -30,10 +30,10 @@ type ObjectMap struct {
    Objects map[string][]GameObject  
 }
 
-func NewObjectMap() ObjectMap {
+func NewObjectMap(GameMap *tiled.Map) ObjectMap {
    objects := make(map[string][]GameObject)
 
-   for _, layer := range gameMap.ObjectGroups {
+   for _, layer := range GameMap.ObjectGroups {
        for _, object := range layer.Objects  {
          
          var name string 
@@ -44,7 +44,7 @@ func NewObjectMap() ObjectMap {
          } else {
             name =  object.Template.Object.Properties.GetString("sprite")
          }
-         position := pi.Position{X: int(object.X), Y: int(object.Y)- gameMap.TileHeight}
+         position := pi.Position{X: int(object.X), Y: int(object.Y)- GameMap.TileHeight}
          gameObj := GameObject{object, position}
          posList, ok := objects[name]
          if !ok {
@@ -56,8 +56,8 @@ func NewObjectMap() ObjectMap {
    }
 
    return ObjectMap {
-      Width: gameMap.Width, 
-      Height: gameMap.Height, Objects: objects}
+      Width: GameMap.Width, 
+      Height: GameMap.Height, Objects: objects}
 }
 
 type Tile struct {
@@ -95,16 +95,16 @@ type TileMap struct {
     //Solid  [][]bool
     Tiles map[string][][]Tile
 }
-func NewTileMap() TileMap {
+func NewTileMap(GameMap *tiled.Map) TileMap {
    tiles := make(map[string][][]Tile)
 
 
-   for _, layer := range gameMap.Layers {
+   for _, layer := range GameMap.Layers {
 
-      tileLayer := make([][]Tile, gameMap.Height)
+      tileLayer := make([][]Tile, GameMap.Height)
 
       for y := range tileLayer {
-          tileLayer[y] = make([]Tile, gameMap.Width)
+          tileLayer[y] = make([]Tile, GameMap.Width)
       }  
 
       tiles[layer.Name] = tileLayer
@@ -116,8 +116,8 @@ func NewTileMap() TileMap {
             tt, err := tile.Tileset.GetTilesetTile(tile.ID)
            if err != nil { continue }
            //if tt.Properties.GetBool("solid") {
-               x := pos % gameMap.Width
-               y := pos / gameMap.Width
+               x := pos % GameMap.Width
+               y := pos / GameMap.Width
                //fmt.Printf("X: %d Y: %d\n", x, y)
 
 
@@ -146,14 +146,14 @@ func NewTileMap() TileMap {
                      Side = &side 
                   }
                }
-               tileLayer[y][x] = Tile{tt.Type, tt.Properties.GetBool("solid"), x*gameMap.TileWidth, y*gameMap.TileHeight, Side} 
+               tileLayer[y][x] = Tile{tt.Type, tt.Properties.GetBool("solid"), x*GameMap.TileWidth, y*GameMap.TileHeight, Side} 
            //}
        }
    }
 
    return TileMap {
-      Width: gameMap.Width, 
-      Height: gameMap.Height, Tiles: tiles}
+      Width: GameMap.Width, 
+      Height: GameMap.Height, Tiles: tiles}
 }
 
 //go:embed "assets/tiny_dungeon_tilesheet.png"
@@ -274,8 +274,8 @@ func main2() {
    //    tileSet.Tiles[tile.Type] = pi.SpriteFrom(sprites, x, y, width, height)
    // }
 
-   tileMap := NewTileMap()
-   objectMap := NewObjectMap()
+   tileMap := NewTileMap(gameMap)
+   objectMap := NewObjectMap(gameMap)
 
    pi.SetScreenSize(256, 144) // set custom screen size
 
@@ -299,7 +299,7 @@ func main2() {
 
    fmt.Println(objectMap.Objects)
    doorObj := objectMap.Objects["tile_door_3"][0]
-   door := NewDoor(doorObj, tileSet.Tiles["tile_door_3"], true)
+   door := NewDoor(doorObj, tileSet.Tiles["tile_door_3"])
 
    gems := make([]*Gem, 0)
    for _, gem := range objectMap.Objects["Gem"] {

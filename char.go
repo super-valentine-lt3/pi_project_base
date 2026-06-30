@@ -42,6 +42,7 @@ const (
     DownLeft 
 )
 
+
 var CurrentDirection = Down 
 
 //go:embed "assets/character_try_16x16_indexed.png"
@@ -285,7 +286,7 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
     }
     
     if c.ShootingProjectile {
-        w.Projectiles = append(w.Projectiles, NewProjectile(c.GameObject.Pos.X, c.GameObject.Pos.Y, c.CurrentDirection, 2, pi.Color(13)))
+        w.Projectiles = append(w.Projectiles, NewProjectile(c.GameObject.Pos.X, c.GameObject.Pos.Y, c.CurrentDirection, 6, pi.Color(13)))
         c.ShootingProjectile = false 
     }
 

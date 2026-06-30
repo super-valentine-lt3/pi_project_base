@@ -119,11 +119,15 @@ type Door struct {
 	Sprite pi.Sprite 
 	GameObject GameObject 
 	Locked bool 
+	NextRoom string 
 }
 
-func NewDoor(obj GameObject, sprite pi.Sprite, locked bool) Door {
+func NewDoor(obj GameObject, sprite pi.Sprite) Door {
+	locked := obj.Config.Template.Object.Properties.GetBool("locked")
+	nextRoom := obj.Config.Properties.GetString("next_room")
+
 	return Door {
-		sprite, obj, locked}
+		sprite, obj, locked, nextRoom}
 }
 
 func (d *Door) Draw() {
@@ -135,7 +139,7 @@ func (d *Door) GetArea() pi.IntArea {
 }
 
 
-func DoorSystem(world *World) {
+func DoorSystem(world *World) *string {
 	// if IntersectsTouch(world.Door.GetArea(), world.Player.GetArea()) && 
 	// 	IsKeyPressed(world.Player.Actions["interact"]) {
 	// 	world.Player.TouchingDoor = true 
@@ -146,10 +150,13 @@ func DoorSystem(world *World) {
 		world.Player.TouchingDoor = true 
 		if IsKeyPressed(world.Player.Actions["interact"]) {
 			fmt.Println("trying to enter door")
+			fmt.Println(world.Door.NextRoom)
+			return &world.Door.NextRoom 
 		}	
 	} else {
 		world.Player.TouchingDoor = false 
 	}
+	return nil 
 }
 
 // Gem ---
@@ -633,7 +640,7 @@ func ProjectileSystem (w *World) {
     	}    
     	for _, bat := range w.Bats {
     		if CircleIntersectsRect(bat.GetArea(), proj.X, proj.Y, proj.Radius)  {
-	    		bat.DecreaseHealth(5)
+	    		bat.DecreaseHealth(10)
 	    		proj.Dead = true 
     		}    	
     	}       	   

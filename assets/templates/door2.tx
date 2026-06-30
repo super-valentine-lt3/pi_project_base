@@ -3,7 +3,8 @@
  <tileset firstgid="1" source="../tiny_dungeon_tilesheet.tsx"/>
  <object name="Door" gid="33" width="16" height="16">
   <properties>
-   <property name="next_room" value=""/>
+   <property name="locked" type="bool" value="false"/>
+   <property name="next_room" value="room_2.tmx"/>
    <property name="solid" type="bool" value="true"/>
    <property name="sprite" value="tile_door_3"/>
   </properties>
