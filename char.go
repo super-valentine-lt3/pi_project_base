@@ -4,7 +4,7 @@ import (
      "github.com/elgopher/pi"
     "github.com/elgopher/pi/pikey"
     "github.com/solarlune/goaseprite"
-    "os"
+    //"os"
     _ "embed"
     // "fmt"
     "github.com/elgopher/pi/pievent"
@@ -122,7 +122,8 @@ func NewSpriteAnim(data []byte,
     file string, directory string, start_anim string, width int, height int, playSpeed float32) *SpriteAnim {
     //sprite, err := goaseprite.Open("character_base_16x16.json", os.DirFS("./assets"))
     
-    sprite, err := goaseprite.Open(file, os.DirFS(directory))
+   // sprite, err := goaseprite.Open(file, os.DirFS(directory))
+    sprite, err := goaseprite.Open("assets/" + file, assetsFS)
 
     if err != nil {
         panic(err)

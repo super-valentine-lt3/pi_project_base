@@ -2,10 +2,14 @@ package main
 
 import (
 	"github.com/elgopher/pi" 
-   "github.com/elgopher/pi/pikey"
-   "github.com/elgopher/pi/pievent"
-   "github.com/lafriks/go-tiled"
+	"github.com/elgopher/pi/pikey"
+	"github.com/elgopher/pi/pievent"
+	"github.com/lafriks/go-tiled"
+	"embed"
 )
+
+//go:embed assets
+var assetsFS embed.FS
 
 var RoomPath string = "assets/rooms/"
 
@@ -19,7 +23,11 @@ type GameScreen struct {
 }
 
 func LoadMap(MapPath string) *tiled.Map {
-   Map, err := tiled.LoadFile(MapPath)
+   Map, err := tiled.LoadFile(
+        MapPath,
+        tiled.WithFileSystem(assetsFS),
+   )
+
    if err != nil {
        panic(err)
    }
