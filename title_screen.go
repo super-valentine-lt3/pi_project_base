@@ -25,13 +25,16 @@ type TitleScreen struct {
 }
 
 func (ts *TitleScreen) StartGame(e pikey.Event, h pievent.Handler) {
+
 	pikey.Target().Unsubscribe(ts.EnterEventHandle)
+	PlaySound(GameStartSample)
 	SetScreen(&GameScreen{}, false)
 }
 
 func (ts *TitleScreen) Init() {
 	pi.Palette = pi.DecodePalette(spritesPNG)
    	MainSprites = pi.DecodeCanvas(spritesPNG)
+   	LoadSamples()
    	ts.Logo = pi.SpriteFrom(MainSprites, 192, 0, 64, 32)
    	ts.ShowMessage = true 
     ts.EnterEventHandle = pikey.Target().Subscribe(pikey.Event{pikey.EventDown, pikey.Enter}, ts.StartGame)

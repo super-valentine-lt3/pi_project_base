@@ -70,6 +70,9 @@ type Character struct {
     DroppingBomb bool 
     ShootingProjectile bool 
     TouchingDoor bool 
+    WalkTimer float64
+    WalkTime float64
+    WalkSound bool 
 }
 
 func (c *Character) PickUpBomb() {
@@ -84,6 +87,7 @@ func (c *Character) DecreaseHealth(damage int) {
     if c.DamageCooldownActive == false {
         c.Health -= damage 
         c.DamageCooldownActive = true 
+        PlaySound(PlayerHurtSample)
         c.DamageFlash = true 
     }
 }
@@ -171,6 +175,7 @@ func NewCharacter(obj GameObject,
     character.DamageCooldown = 25 // frames 
     character.DamageFlashTimer = DamageFlashTime
     character.BombCount = 3 
+    character.WalkTimer = .25
 
    // pikey.Target().Subscribe(pikey.Event{pikey.EventDown, pikey.Space}, func(e pikey.Event, h pievent.Handler){
    //      character.DroppingBomb = true 
@@ -223,6 +228,11 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
             c.CurrentDirection = Up 
         }
         //}
+        if !c.WalkSound {
+            c.WalkTime = pi.Time 
+            c.WalkSound = true 
+            PlaySound(PlayerWalkSample)
+        }
     } else if IsKeyPressed(c.Actions["move_down"]) {
         tempY :=  c.GameObject.Pos.Y + speed 
         tempX := c.GameObject.Pos.X 
@@ -233,6 +243,12 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
             c.CurrentDirection = Down 
         }
         //}
+        if !c.WalkSound {
+            c.WalkTime = pi.Time 
+            c.WalkSound = true 
+            PlaySound(PlayerWalkSample)
+        }
+
     } else if IsKeyPressed(c.Actions["move_left"]) {
         tempX := c.GameObject.Pos.X - speed 
         tempY := c.GameObject.Pos.Y 
@@ -243,6 +259,12 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
             c.CurrentDirection = Left 
         }
         //}
+        if !c.WalkSound {
+            c.WalkTime = pi.Time 
+            c.WalkSound = true 
+            PlaySound(PlayerWalkSample)
+        }
+
     } else if IsKeyPressed(c.Actions["move_right"]) {
         tempX := c.GameObject.Pos.X + speed 
         tempY := c.GameObject.Pos.Y 
@@ -253,6 +275,12 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
             c.CurrentDirection = Right 
         }
         //}
+        if !c.WalkSound {
+            c.WalkTime = pi.Time
+            c.WalkSound = true  
+            PlaySound(PlayerWalkSample)
+        }
+
     } else {
         switch c.CurrentDirection {
         case Up:
@@ -289,6 +317,7 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
     if c.ShootingProjectile {
         w.Projectiles = append(w.Projectiles, NewProjectile(c.GameObject.Pos.X, c.GameObject.Pos.Y, c.CurrentDirection, 6, pi.Color(13)))
         c.ShootingProjectile = false 
+        PlaySound(ProjectileSample)
     }
 
     if c.DamageCooldownActive {
@@ -304,6 +333,10 @@ func (c *Character) Update(w *World) {//Map *CollisionMap) {
             c.DamageFlash = false 
             c.DamageFlashTimer = DamageFlashTime
         }
+    }
+    
+    if (pi.Time - c.WalkTime) >= c.WalkTimer {
+        c.WalkSound = false 
     }
     c.Sprite.Update(float32(1.0 / 60.0))
 }

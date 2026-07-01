@@ -94,6 +94,7 @@ func BombSystem (w *World) {
     	if Intersects(w.Player.GetArea(), bomb.GetArea()) && !bomb.Detonated {
     		bomb.PickedUp = true 
     		w.Player.PickUpBomb()
+    		PlaySound(CollectSample)
     	}
 
     	for _, crab := range w.Crabs {
@@ -231,6 +232,7 @@ func GemSystem (w *World) {
     w.Gems = slices.DeleteFunc(w.Gems, func(g *Gem) bool {
     	if Intersects(w.Player.GetArea(), g.GetArea()) {
     		w.Player.AddPoints(g.PointValue)
+    		PlaySound(CollectSample)
     		return true 
     	}
         return false 
@@ -356,6 +358,10 @@ type Crab struct {
     DamageFlash bool 
     DamageFlashTimer int 
 
+    WalkTimer float64
+    WalkTime float64
+    WalkSound bool 
+
 }
 
 func NewCrab(obj GameObject) *Crab{
@@ -371,6 +377,8 @@ func NewCrab(obj GameObject) *Crab{
     crab.Idle = true 
     crab.Health = 20
     crab.DamageFlashTimer = DamageFlashTime
+    crab.WalkTimer = .25
+
     return crab
 }
 
@@ -475,6 +483,12 @@ func (c *Crab) Update(w *World) {
 		}
 	} else if !c.Idle {
 		c.Move(w, c.Dir)
+		if !c.WalkSound {
+            c.WalkTime = pi.Time 
+            c.WalkSound = true 
+            PlaySound(CrabWalkSample)
+        }
+
 		//  if c.Dir == Up {  
 	    //    tempY :=  c.GameObject.Pos.Y - speed 
 	    //    tempX := c.GameObject.Pos.X 
@@ -507,6 +521,9 @@ func (c *Crab) Update(w *World) {
             c.DamageFlash = false 
             c.DamageFlashTimer = DamageFlashTime
         }
+    }
+    if (pi.Time - c.WalkTime) >= c.WalkTimer {
+        c.WalkSound = false 
     }
 
 	c.Sprite.Update(float32(1.0 / 30.0))
@@ -635,12 +652,14 @@ func ProjectileSystem (w *World) {
     	for _, crab := range w.Crabs {
     		if CircleIntersectsRect(crab.GetArea(), proj.X, proj.Y, proj.Radius)  {
 	    		crab.DecreaseHealth(5)
+	    		PlaySound(CrabHurtSample)
 	    		proj.Dead = true 
     		}    	
     	}    
     	for _, bat := range w.Bats {
     		if CircleIntersectsRect(bat.GetArea(), proj.X, proj.Y, proj.Radius)  {
 	    		bat.DecreaseHealth(10)
+	    		PlaySound(BatHurtSample)
 	    		proj.Dead = true 
     		}    	
     	}       	   
