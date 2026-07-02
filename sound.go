@@ -41,6 +41,10 @@ var PlayerWalkSample *piaudio.Sample
 var projectileWAV []byte
 var ProjectileSample *piaudio.Sample
 
+//go:embed "assets/sounds/td_song_1.wav"
+var themeSongWAV []byte 
+var ThemeSongSample *piaudio.Sample 
+
 func LoadSamples() {
 	BatHurtSample = piaudio.DecodeWav(batHurtWAV)
 	CollectSample = piaudio.DecodeWav(collectWAV)
@@ -51,6 +55,7 @@ func LoadSamples() {
 	PlayerHurtSample = piaudio.DecodeWav(playerHurtWAV)
 	PlayerWalkSample = piaudio.DecodeWav(playerWalkWAV)
 	ProjectileSample = piaudio.DecodeWav(projectileWAV)
+	ThemeSongSample = piaudio.DecodeWav(themeSongWAV)
 
 	piaudio.LoadSample(BatHurtSample)
 	piaudio.LoadSample(CollectSample)
@@ -61,6 +66,7 @@ func LoadSamples() {
 	piaudio.LoadSample(PlayerHurtSample)
 	piaudio.LoadSample(PlayerWalkSample)
 	piaudio.LoadSample(ProjectileSample)
+	piaudio.LoadSample(ThemeSongSample)	
 }
 
 func PlaySound(sample *piaudio.Sample) {
@@ -68,4 +74,19 @@ func PlaySound(sample *piaudio.Sample) {
 	vol := 1.0
 	pitch := 1.0 
 	piaudio.Play(ch, sample, pitch, vol)
+}
+
+func PlayTheme() {
+	ch := piaudio.Chan3 | piaudio.Chan4
+	vol := .20
+	pitch := 1.0 
+	piaudio.Play(ch, ThemeSongSample, pitch, vol)	
+	piaudio.SetLoop(ch, 0, ThemeSongSample.Len(), piaudio.LoopForward, 0)
+}
+
+func StopTheme() {
+	ch := piaudio.Chan3 | piaudio.Chan4
+	vol := 0.0
+	pitch := 1.0 
+	piaudio.Play(ch, ThemeSongSample, pitch, vol)	
 }

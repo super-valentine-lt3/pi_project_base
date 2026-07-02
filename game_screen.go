@@ -38,7 +38,7 @@ func (g *GameScreen) Init() {
    firstMap := LoadMap(RoomPath + FirstRoom)
    g.TileSet = NewTileSet(firstMap) 
    g.Room = NewRoom(g.TileSet, nil,  firstMap)
-
+   PlayTheme()
    pikey.Target().Subscribe(pikey.Event{pikey.EventDown, pikey.Esc}, g.TogglePause)
 }
 
@@ -62,6 +62,7 @@ func (g *GameScreen) Update() {
 			g.Room = NewRoom(g.TileSet, g.Room.World.Player, Map)
 		} else if newRoom != nil && *newRoom == "title_screen" {
 			SetScreen(&TitleScreen{}, false)
+			StopTheme()
 		}
 	} else {
 		pausePanelRoot.Update()
